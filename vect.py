@@ -25,6 +25,4 @@ def cross(vecA:vec2,vecB:vec2):
     """
     pour savoir la direction ou va le personnage
     """
-
-    
     return vecA.x*vecB.y+vecA.y*vecB.x

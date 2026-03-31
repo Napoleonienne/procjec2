@@ -1,12 +1,5 @@
 from app import *
-def main():
 
-
-
-
-
-
-    return
 
 
 
