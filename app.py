@@ -1,7 +1,14 @@
-
+import logging
 from time import time_ns as time
 import graphisme
 
+
+logging.basicConfig(
+    level=logging.DEBUG, 
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    filename='app.log',  
+    filemode='w'         
+)
 class app:
     menu_etat = True
     dt =0
@@ -11,14 +18,16 @@ class app:
         self.mainloop()
         graphisme.fermer()
        
-    def menu():
+    def menu(self):
 
 
         return
 
 
     def mainloop(self):
-        while graphisme.shouldclose:
+        ev:str =""
+        tev:str = ""
+        while graphisme.shouldclose(tev):
             firstframe = time()
             if self.menu_etat:
                 self.menu()
