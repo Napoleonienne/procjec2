@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import itertools
 class scene:
     def __init__(self):
         self.entité_contenus:list[entity]
@@ -6,7 +7,6 @@ class scene:
     def create_entity(self):
         self.entité_contenus.append(entity())
 
-import itertools
 
 itertools.accumulate(range(10),
                     lambda total, x: total + x / 2.0,
@@ -31,7 +31,4 @@ class compnent():
         pass
 
 
-class component:
-    def __init__(self):
-        pass
 
