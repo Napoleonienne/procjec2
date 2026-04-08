@@ -6,14 +6,18 @@ class scene:
     def create_entity(self):
         self.entité_contenus.append(entity())
 
+import itertools
 
-
+itertools.accumulate(range(10),
+                    lambda total, x: total + x / 2.0,
+                    initial=0.0)
 class system:
     def __init__(self):
 
 
         pass
-
+class monde:
+    pass
 
 
 class entity:
@@ -25,4 +29,9 @@ class entity:
 class compnent():
     def __init__(self) -> None:
         pass
-        
+
+
+class component:
+    def __init__(self):
+        pass
+

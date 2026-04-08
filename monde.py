@@ -1,12 +1,18 @@
 from pathlib import Path
-from vect import vec2
 from dataclasses import dataclass
+import vect
+vec2 = vect.Vec2
+
+
 class joueur:
-    def __init__(self,pos):
-        self.position =pos
-        self.vistesse =0.0
-        self.poid=12
-        self.direction =vec2
+    """
+    classe du joueur comme je vais etyre sur de ecs c'est une une dataclass que je mettrais a jour grace aux syteme du jeu
+    """
+    def __init__(self,pos:vec2):
+        self.position:vec2 =pos
+        self.vistesse:float =0.0
+        self.poid:float=12
+        self.direction:vec2 =vec2()
     
 
     
@@ -26,8 +32,12 @@ class niveau:
     
     """
     def __init__(self):
-        self.layout:list[tuile] = []
-        self.decor:list[tuile] = []
+        self.couches:dict[str,list|str] = {
+            "fond": "",      # Image de fond
+            "decor": [],     # Tuiles décoratives (sans collision)
+            "terrain": [],   # Tuiles solides (avec collision)
+            "devant": []     # Éléments de premier plan
+        }
 
 @dataclass
 class tuile:
