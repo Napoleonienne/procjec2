@@ -1,11 +1,17 @@
 from dataclasses import dataclass
 import itertools
+from os import name
+
+
 class scene:
     def __init__(self):
-        self.entité_contenus:list[entity]
+        self.entité_contenus:dict
 
     def create_entity(self):
-        self.entité_contenus.append(entity())
+        d:entity = entity()
+        self.entité_contenus[]
+
+    
 
 
 itertools.accumulate(range(10),
@@ -16,8 +22,6 @@ class system:
 
 
         pass
-class monde:
-    pass
 
 
 class entity:
@@ -25,10 +29,17 @@ class entity:
     def __init__(self):
         self.ID = self.compteur
         self.compteur =+ 1
+        self.component:dict = {}
+    def add_component(self,data:compnent):
+        self.component[data.name]
+        
+    
+@dataclass
+class test:
+    ab = ()
 
-class compnent():
-    def __init__(self) -> None:
-        pass
+
+
 
 
 

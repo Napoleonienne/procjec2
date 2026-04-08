@@ -13,6 +13,7 @@ class joueur:
         self.vistesse:float =0.0
         self.poid:float=12
         self.direction:vec2 =vec2()
+        self.texture:str
     
 
     
