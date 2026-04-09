@@ -77,6 +77,7 @@ def load_asset(path:str,tile:Vec2):
 
 
 def load_videos():
+    pass
     
 
 
@@ -91,13 +92,11 @@ def test():
 
     """
     afficher(True)
-    
+
     for i in range(0,LARGEUR,TAILE_TUILE):
         for j in range(0,HAUTEUR,TAILE_TUILE):
             fltk.rectangle(i,j,i+TAILE_TUILE,j+TAILE_TUILE,"red")
     load_asset("asset/vert.jpg",Vec2(790,590))
-            
-        
 
     while True:
         ev =  fltk.donne_ev()
@@ -107,8 +106,10 @@ def test():
 
         if shouldclose(tev):
             break
-    
+
     fermer()
     return
+
+
 if __name__ == "__main__" :
      test()

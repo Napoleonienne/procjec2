@@ -1,42 +1,60 @@
+import abc
+from ast import Import
 from dataclasses import dataclass
-import itertools
-from os import name
+from abc import ABC, abstractmethod
+from logging import error
 
 
+component = dataclass
 class scene:
     def __init__(self):
-        self.entité_contenus:dict
+        self.sys:system  = system()
+        self.entité_contenus:dict ={}
 
-    def create_entity(self):
-        d:entity = entity()
-        self.entité_contenus[]
+    def create_entity(self,name):
+        self.entité_contenus[name] = entity
 
     
 
 
-itertools.accumulate(range(10),
-                    lambda total, x: total + x / 2.0,
-                    initial=0.0)
-class system:
-    def __init__(self):
+class System(ABC):
+    """
+    la classe qui permett de definir les autres syteme
+    """
+    @abstractmethod
+    def start(self) -> None:
+        """Prépare le système avant la boucle principale."""
+        error("pas implementer")
+        
+
+    @abstractmethod
+    def update(self) -> None:
+        """Exécute la logique principale du système."""
+        error("pas implementer")
+
+    @abstractmethod
+    def stop(self) -> None:
+        """Nettoie les ressources du système."""
+        error("pas implementer")
 
 
-        pass
+
 
 
 class entity:
     compteur:int =0
     def __init__(self):
-        self.ID = self.compteur
-        self.compteur =+ 1
-        self.component:dict = {}
-    def add_component(self,data:compnent):
-        self.component[data.name]
+        self.ID = entity.compteur
+        entity.compteur += 1
+        self.component:set = {}
+
+    def add_component(self,data):
+        self.component.add(data)
         
+
+
     
-@dataclass
-class test:
-    ab = ()
+    
 
 
 

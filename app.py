@@ -19,8 +19,7 @@ class app:
         graphisme.fermer()
        
     def menu(self):
-
-
+     
         return
 
 
@@ -29,7 +28,7 @@ class app:
         tev:str = ""
         while graphisme.shouldclose(tev):
             firstframe = time()
-            if self.menu_etat:
+            if app.menu_etat:
                 self.menu()
 
 
@@ -38,8 +37,8 @@ class app:
 
             
             graphisme.swapbuffer()
-            dt = lastframe -firstframe
+            dt = app.lastframe -firstframe
             lastframe = firstframe
-
             pass
+        return None
 

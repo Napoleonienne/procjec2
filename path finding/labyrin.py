@@ -11,7 +11,7 @@ def create_labyrinte(taille:tuple[int,int])->list:
     Returns:
         list: _description_
     """
-    labyrint:list = [[ 0 for y in taille[1]] for x in range(taille[0])]
+    labyrint:list = [[ None for y in taille[1]] for x in range(taille[0])]
 
 
 
