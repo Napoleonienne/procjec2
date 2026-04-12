@@ -3,6 +3,7 @@ import time
 import vect
 import math
 import logging
+import base_arch.ecs as ecs
 
 Vec2 = vect.Vec2
 
@@ -79,6 +80,9 @@ def load_asset(path:str,tile:Vec2):
 def load_videos():
     pass
     
+
+
+
 
 
 

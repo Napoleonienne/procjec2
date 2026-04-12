@@ -1,0 +1,14 @@
+import vect
+import ecs
+
+
+@ecs.component
+class graphi:
+    texture_chemin = ""
+    pos:vect.Vec2 = vect.Vec2()
+
+@ecs.component
+class physique:
+    vistesse = vect.Vec2
+    acceleration:float
+    poid:float
