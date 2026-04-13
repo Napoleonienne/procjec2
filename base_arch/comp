@@ -1,13 +1,14 @@
 import vect
+from ecs import componente as component
 import ecs
 
 
-@ecs.component
+@component
 class graphi:
     texture_chemin = ""
     pos:vect.Vec2 = vect.Vec2()
 
-@ecs.component
+@component
 class physique:
     vistesse = vect.Vec2
     acceleration:float

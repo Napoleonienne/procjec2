@@ -2,180 +2,125 @@ from calendar import c
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from logging import error
-import struct
+import logging
 from typing import overload
-
+from itertools import count as _count
 from numpy import iterable
+from typing import NamedTuple, Any,TypeVar 
 
 
-struct = dataclass
+"""_summary_
+je me base sur esper https://github.com/benmoran56/esper pour faire mon propre syteme ecs 
+
+entitty compoent sytme c'est juste un syteme est aux utiliser ineritence qui pose des probleme comme on n'arrive pas entierment enfermer 
+tout les qui est liée a la classe ou ineritence circulaire ou encore
+le fait de devoir tu veux un sorchier mais qui soit aussi un archer 
+
+je l'ai  decourvet quand je crois avec opengl et essayer de regarder comment faire un moteur de jeux vue que c'est aussi l'un de mes procject 
+
+"""
+
+_C = TypeVar('_C')
+_C2 = TypeVar('_C2')
+_C3 = TypeVar('_C3')
+_C4 = TypeVar('_C4')
+
+componente = dataclass
+_entity_count: _count[int] = _count(start=1)
+class monde(NamedTuple):
+    entity_count: _count[int]
+    components: dict[type[Any], set[int]]
+    entities: dict[int, dict[type[Any], Any]]
+    dead_entities: set[int]
+    comp_cache: dict[type[Any], list[Any]]
+    comps_cache: dict[tuple[type[Any], ...], list[Any]]
+    processors: list['Processor']
+    processors_dict: dict[type['Processor'], 'Processor']
+    cache_dirty: bool
+    process_times: dict[str, int]
+    event_registry: dict[str, Any]
 
 
+nom_monde_actuel:str ="default"
+monde_actuelle:monde = monde(_count(start=1),{},{},set(),
+                             {},{},[],{},
+                             False,{},{})
+_context_map: dict[str, monde] ={nom_monde_actuel:monde_actuelle}
 
-class System(ABC):
+
+def liste_des_mondes() -> dict[str, monde]:
+    global _context_map
+
+    return _context_map
+
+def supprimer_monde(name: str) -> None:
     """
-    la classe qui permett de definir les autres systèmes,
-    et doitre etre hériter
+    supprime le monde entier
+   
     """
-    def __init__(self,comp_req:set) -> None:
-        super().__init__()
-        self.comp_req:set = comp_req
+    global _context_map,nom_monde_actuel
+    if nom_monde_actuel == name:
+        logging.error("le monde active ne peut etre supprimer")
+        return
 
-    @abstractmethod
-    def proces(self, entity: entity) -> None:
-        """Exécute la logique principale du système."""
-        error("pas implementer")
+    del _context_map[name]
+
+def changer_de_monde(name:str)->None:
+    global nom_monde_actuel, monde_actuelle,_context_map
+    nom_monde_actuel = name
+
+    if name not in _context_map:
+        _context_map[name] =monde(_count(start=1),{},{},set(),
+                             {},{},[],{},
+                             False,{},{})
+        monde_actuelle = _context_map[name]
+        return
+    
+    monde_actuelle = _context_map[name]
 
 
 
-class component_manzger(ABC):
+
+
+
+def clear_database() -> None:
+    """Clear the Entity Component database.
+
+    Removes all Entities and Components from the current World.
+    Processors are not removed.
     """
-    la classe qui permet de definir les autres composant,
-    et doitre etre hériter
+    global _entity_count
+    _entity_count = _count(start=1)
+    _components.clear()
+    _entities.clear()
+    _dead_entities.clear()
+    _clear_cache_now()
+################################################
+#               processor
+################################################
+class Processor:
     """
-    def __init__(self) -> None:
-        super().__init__()
-        self.component = dict[int,object] # un dictionnaire qui associe le type du component a son instance
-    
-    def add_component(self,comp_type:object)->None:
-        """
-        ajoute le component a la liste des component
+    base pout tout les processors, doit être hérité et la méthode process doit être implémentée
 
-        Args:
-            comp_type (object): le component a ajouter
-        """
-        if comp_type in self.component:
-            error(f"le component {comp_type.__name__} existe déjà")
-        self.component[comp_type] = comp_type()
-
-
-
-
-
-class entity2:
-    def __init__(self):
-        self.ID:int = 0
-    
-
-
-
-
-class entity:
+        def process(self):
+            for ent, (rend, vel) in esper.get_components(Renderable, Velocity):
+                your_code_here()
     """
-    l'entité est la classe qui definit out object du monde et contient les composant associé a l'instance de l'entité
 
-    dans un langage de bas niveau je ferais pas comme sa 
-    """
-    compteur:int =0
-    def __init__(self):
-        self.ID:int = entity.compteur
-        entity.compteur += 1
-        self.component:set[object]
+    priority = 0
 
-    def add_component(self,comp_type)->None:
-        """
-        ajpuit le component a l'entité si il n"y est pas déjà
+    def process(self, *args: Any, **kwargs: Any) -> None:
+        raise NotImplementedError
 
-        Args:
-            comp_type (_type_): le component a ajouter
+def add_processor(processor_instance: Processor, priority: int = 0) -> None:
+    processor_instance.priority = priority 
+    monde_actuelle.processors.append(processor_instance)
+    monde_actuelle.processors.sort(key=lambda proc: proc.priority, reverse=True)
+    monde.processors_dict[type(processor_instance)] = processor_instance
 
-        """
-        if self.has_component(comp_type):
-
-            error(f"l'entité {self.ID} a déjà le component {comp_type.__name__}")
-        self.component.add(comp_type)
-
-
-    def get_component(self,comp_type)->object|None:
-        """
-            récupère le component de l'entité si il existe
-        Args:
-            comp_type (_type_): type du component a vérifier
-
-        Returns:
-            object|None: envoie le component si il existe sinon envoie None
-        """
-        for comp in self.component:
-            if isinstance(comp,comp_type):
-                return comp
-        return None
-    def remove_component(self,comp_type)->bool:
-        """
-        enleve l'instance du component de l'entité
-
-        Args:
-            comp_type (_type_): type du component a enlevé
-
-        Returns:
-            bool: _description_
-        """
-        select = None
-        for comp in self.component:
-            if isinstance(comp,comp_type):
-                select = comp
-                break
-        self.component.remove(select)
-
-    
-    
-    def has_component(self,comp_type:object|set|list)->bool:
-        """
-        verifie que le component existe
-
-        Args:
-            comp_type (_type_): type du component a vérifier ou ensemble de types
-
-        Returns:
-            bool: True si le component existe, False sinon
-        """
-        if isinstance(comp_type, (set, list)):
-            for ct in comp_type:
-                if not self.has_component(ct):
-                    return False
-            return True
-        else:
-            for comp in self.component:
-                if isinstance(comp, comp_type):
-                    return True
-            return False
-
-    
-
-
-    #pour le debuging
-    def __str__(self):
-        return f"entité {self.ID} avec les components: {[comp.__class__.__name__ for comp in self.component]}"
-    def __repr__(self):
-        return self.__str__()
-
-        
 
 
     
-    
-
-class scene:
-    def __init__(self):
-        self.sys:set[System]
-        self.entité_contenus:dict[str,entity] ={}
-
-    def create_entity(self,name:str):
-        self.entité_contenus[name] = entity()
-        return self.entité_contenus[name]
-    
-    def all_entity(self):
-        return self.entité_contenus.values()
-
-    def add_system(self,sys:System):
-        self.sys.add(sys)
-    
-    def update(self):
-        for _,entite in self.entité_contenus.items():
-            for sys in self.sys:
-                if entite.has_component(sys.comp_req):
-                    sys.proces(entite)
-    
-
     
 
 
