@@ -92,6 +92,10 @@ class button:
         taille_texte:int =  20
         estim_largeur_texte = len(text) * (taille_texte * 0.35)
         estim_hauteur_texte = len(text) * (taille_texte * 0.5)
+
+        self.pos_texte:tuple = (0,0)
+
+        
         
         
 
@@ -127,15 +131,23 @@ class button:
 
 
     
-    def afficher():
+    def afficher(self):
         """
         va afficher le buton
         """
+        self.id.append(fltk.rectangle(self.p1.x,self.p1.y,self.p2.x,self.p2.y))
+        self.id.append(fltk.texte(self.pos_texte[0],self.pos_texte[1],self.text))
         return
+    
+    def suppr(self):
+        for i in self.id:
+            fltk.efface(i)
+        return
+    
 
         
         
-    
+
 
 
 

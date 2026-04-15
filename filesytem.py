@@ -1,4 +1,4 @@
-from os
+from ospath, 
 from pathlib import Path
 import json
 from shutil import which
@@ -19,20 +19,22 @@ def dump_niveau(niveau:niveau,name):
     
     
 
-    d = {fond:niveau.}
-    ch_savegarde:Path = Path('fichier jeux/save')
-    if not ch_savegarde.exists():
-        os
+    d = {fond:niveau.fond,decor:niveau.decor,terrain:niveau.terrain}
+    ch_savegarde:Path = Path('fichier jeux/save').glob()
 
-
-    with open(chemin) as f:
-        json.dump()
+    with open(ch_savegarde) as f:
+        json.dump(d,f)
         
 
 
 def charger_niveau(nom:str):
-    with open(chemin) as f:
-        contenu = json.load(f)
+    ch_savegarde:Path = Path('fichier jeux/save')
+
+    for ch in ch_savegarde.glob(''):
+        ch.
+        
+
+    
 
 
 
