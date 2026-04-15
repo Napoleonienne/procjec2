@@ -1,4 +1,3 @@
-import vect
-
+from vect import Vec2
 
 

@@ -33,12 +33,12 @@ class niveau:
     
     """
     def __init__(self):
-        self.couches:dict[str,list|str] = {
-            "fond": "",      # Image de fond
-            "decor": [],     # Tuiles décoratives (sans collision)
-            "terrain": [],   # Tuiles solides (avec collision)
-            "devant": []     # Éléments de premier plan
-        }
+        self.fond:str ="",      # Image de fond
+        self.decor:list[tuile] =[],     # Tuiles décoratives (sans collision)
+        self.terrain:list[tuile] =[],   # Tuiles solides (avec collision)
+        self.devant:str = []     # Éléments de premier plan encore a determiner a utilit peut ere pour des decor plus complexe
+        
+    
 
 @dataclass
 class tuile:
