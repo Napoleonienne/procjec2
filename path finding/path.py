@@ -13,9 +13,9 @@ def comparairson(n1,n2):
 def evaluer(level:list[list],obj:tuple[int,int])->list[list]:
     d = itertools.product(range(len(level [0])), 
                     range(len(level[0][0])))
-    j = [ [ y for y in range(len(level [0][0])) ] for x in range(len(level [0])) ]
+    j = [ [ None for y in range(len(level [0][0])) ] for x in range(len(level [0])) ]
     for x,y in d:
-        j[x][y] = ( (obj[0]+x)**2  -(obj[1]+y)**2) **1/2
+        j[x][y] = ( ( obj[0]-x )**2  + ( obj[1]-y )**2) ** (1/2)
       
 
     return j

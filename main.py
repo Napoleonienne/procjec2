@@ -3,7 +3,7 @@ import logging
 
 
 
-
+py = app()
 if __name__ =="__main__":
-    print(2<<31)
+    py.run()
 
