@@ -33,11 +33,11 @@ def resource_path(relative_path)->str:
 
 
 
-def dump_niveau(niveau:niveau,name):
+def sauvegarder_niveau(niveau:niveau,name):
     
     
 
-    d = {fond:niveau.fond,decor:niveau.decor,terrain:niveau.terrain}
+    d = {"fond":niveau.fond,"decor":niveau.decor,"terrain":niveau.terrain}
     ch_savegarde:Path = Path('fichier jeux/save').glob()
 
     with open(ch_savegarde) as f:
@@ -45,14 +45,33 @@ def dump_niveau(niveau:niveau,name):
         
 
 
-def charger_niveau(nom:str):
-    ch_savegarde:Path = Path('fichier jeux/save')
+
+
+
+def préchaerger_niveau():
+    """_summary_
+
+    Args:
+        nom (str): _description_
+    """
+    temp: dict = dict()
+    ch_savegarde = Path(resource_path('niveau'))
+    for ch in ch_savegarde.glob(''):
+        with open(ch) as f:
+            d: dict = json.load(f)
+            temp[ch.stem] = niveau(d['fond'],d['decor'],d['terrain'])
+        
+
+
+
+def charger_niveau(nom:str) -> niveau | None:
+    ch_savegarde = Path(resource_path('niveau'))
     fichier = ch_savegarde / f"{nom}.json"
 
     for ch in ch_savegarde.glob(''):
         if ch.stem == nom:
             with open(ch) as f:
-                d = json.load(f)
+                d: dict = json.load(f)
                 return niveau(d['fond'],d['decor'],d['terrain'])
         
 

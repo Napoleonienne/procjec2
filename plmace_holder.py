@@ -7,8 +7,9 @@ from vect import Vec2 as vec2
 
 class tuile:
     """
-    je vais probablement pas utiliser les forme comme les rectangle ou autre integrer a fltk on va faire plus complexe · 
+    classe de tuile qui va etre la classe de base pour les tuile du jeu
 
+    qui a une position dans la grille et une texture
     """
     taille_tuile = 20
     def __init__(self,pos:vec2,texture:str):

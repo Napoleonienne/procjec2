@@ -93,7 +93,7 @@ def afficher_sprite(path:str,pos:Vec2,taile:Vec2):
     """
     fltk.image(pos.x,pos.y,path,taile.x,taile.y)
 
-class button:
+class bouton:
     def __init__(self,pos:Vec2,
                  dim:tuple[Vec2,Vec2]
                  ,text:str,
@@ -200,7 +200,7 @@ def test():
 
     afficher_sprite("asset/joueur/mouton.png",Vec2(100,100),Vec2(32,32))
 
-    abj:bouton = button(Vec2(),(Vec2(100,100),Vec2(200,200)),"test",lambda : print("test"))
+    abj:bouton = bouton(Vec2(),(Vec2(100,100),Vec2(200,200)),"test",lambda : print("test"))
     
             
         
