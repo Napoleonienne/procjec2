@@ -2,9 +2,8 @@ import os
 import sys
 from pathlib import Path
 import json
-from shutil import which
-from plmace_holder import tuile,sprite
-from monde import niveau
+from place_holder import tuile,sprite
+
 """
 just pour charger les niveau, les asset meme si je vais laisser a fltk  et sauvegarder les niveau 
 pour l'instant j'essaye de voir quoi choisir pour sauvegarder peut etre un json ou un csv 
@@ -16,7 +15,8 @@ un syteme de tuile et de layout colle bien
 vue autemp  de truc est charger sa va etre la partie sauvegarde asset et mettre une id pour chaque point 
 
 """
-
+class niveau:
+    pass
 def resource_path(relative_path)->str:
     """
     Obtient le chemin absolu vers une ressource pour la compilation avec PyInstaller. 

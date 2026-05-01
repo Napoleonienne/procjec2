@@ -4,7 +4,7 @@ from graphisme import HAUTEUR, LARGEUR, TAILE_TUILE
 from filesytem import resource_path 
 import graphisme
 import vect
-from plmace_holder import tuile,sprite
+from place_holder import tuile,sprite
 vec2 = vect.Vec2
 import fltk
 
