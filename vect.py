@@ -25,7 +25,8 @@ class Vec2:
    
 
 def norme(vec:Vec2)->float:
-    """_summary_
+    """
+    renvoie la norme du vecteur
 
     Args:
         vec (Vec2): _description_
@@ -35,7 +36,7 @@ def norme(vec:Vec2)->float:
     """
     return (vec.x**2 +vec.y**2 )**0.5
 def normalize(vec:Vec2)->Vec2:
-    """_summary_
+    """met le vecteur a une norme de 1
 
     Args:
         vec (Vec2): _description_
@@ -45,14 +46,14 @@ def normalize(vec:Vec2)->Vec2:
     """
     return vec/norme(vec)
 def dot(vecA:Vec2,vecB:Vec2)->float:
-    """_summary_
+    """
     PRODUIT scalaire
     Args:
-        vecA (Vec2): _description_
-        vecB (Vec2): _description_
+        vecA (Vec2): 1er vecteur
+        vecB (Vec2): 2ème vecteur
 
     Returns:
-        float: _description_
+        float: scalaire
     """
     return vecA.x*vecB.x+vecA.y*vecB.y
 

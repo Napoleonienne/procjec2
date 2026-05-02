@@ -37,8 +37,7 @@ source "$VENV_NAME/bin/activate"
 pip install --upgrade pip
 
 
-pip install nava PyInstaller pillow 
-
+pip install -r '/home/guy/Bureau/procjec2/req.txt'
 
 
 

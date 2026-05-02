@@ -81,8 +81,12 @@ def palier(vec:Vec2, taille_tuile:int)->Vec2:
         Vec2: coordonné de la case ou est le point vec
     """
   
-   
-    new_vec:Vec2 = Vec2(vec.x //taille_tuile+.5,vec.y//taille_tuile+.5) *taille_tuile
+
+    new_vec: Vec2 = Vec2(
+        (vec.x + taille_tuile / 2) // taille_tuile * taille_tuile,
+        (vec.y + taille_tuile / 2) // taille_tuile * taille_tuile
+    )
+
     return new_vec
 
 
@@ -241,19 +245,30 @@ class Bouton:
     
 
 import itertools
+class Grille:
+    def __init__(self, taille_tuile: int):
+        self.taille_tuile = taille_tuile
+        self.tuiles = {}  # {(x, y): tuile}
 
-def creer_grille(taile:int,couleur:str):
-    for i in range(0,LARGEUR,taile):
-        for j in range(0,HAUTEUR,taile):
-            fltk.rectangle(i,j,i+taile,j+taile,couleur)
+    def ajouter_tuile(self, pos: Vec2, texture: str):
+        pos_snappée = palier(pos, self.taille_tuile)
+        self.tuiles[(pos_snappée.x, pos_snappée.y)] = place_holder.tuile(pos_snappée, texture, self.taille_tuile)
 
+    def afficher(self):
+        for tuile in self.tuiles.values():
+            afficher_tuile(tuile)
+    
+    
 
 
 
 def test():
     afficher(True)
     # Afficher une grille statique (pas besoin de recalculer à chaque frame)
-    creer_grille(32, "red")
+    grille = Grille(32)
+    grille.ajouter_tuile(Vec2(0, 0), "asset/vert.jpg")
+    grille.afficher()
+
 
     # Position fixe pour le sprite
     afficher_sprite("asset/joueur/mouton.png", Vec2(100, 100), Vec2(32, 32))
