@@ -1,15 +1,12 @@
-import math
-from socket import create_server
-from turtle import pos
-
 import fltk
-import time
 import vect
 import logging
-from typing import Optional,Callable
-import place_holder
-import sys,os
 import time
+import os
+import sys
+from typing import Optional, Callable
+import place_holder
+
 
 def resource_path(relative_path)->str:
     """
@@ -20,7 +17,7 @@ def resource_path(relative_path)->str:
     """
     try:
         base_path = sys._MEIPASS
-    except Exception:
+    except AttributeError:
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
@@ -125,136 +122,112 @@ def afficher_sprite(path:str,pos:Vec2,taile:Vec2):
         pos (Vec2): position ou afficher le sprite
         taile (Vec2): taille du sprite
     """
-    fltk.image(pos.x,pos.y,path,taile.x,taile.y)
-
-"""
-def creer_bouton(
-    donne: Dict[str, Any],
-    nom: str,
-    taille_t: int,
-    texte: str,
-    centre: Tuple[float, float],
-    dimension: Tuple[float, float],
-    remplissage: Optional[str] = None,
-    fonction: Optional[Callable] = None
-) -> None:
-    l, h = donne["dim_f"]
-    ax = l * (centre[0] - dimension[0] / 2)
-    ay = h * (centre[1] - dimension[1] / 2)
-    bx = l * (centre[0] + dimension[0] / 2)
-    by = h * (centre[1] + dimension[1] / 2)
-    a = texte.split("\n")
-    b = max(a, key=len)
-
-    tl,hl =t.taille_texte(texte,taille=taille_t)
-    estim_largeur_texte = len(b) * (taille_t * 0.35)
-    estim_hauteur_texte = len(a) * taille_t * 0.5
-
-    x_texte = l * centre[0] - estim_largeur_texte
-    y_texte = h * centre[1] - estim_hauteur_texte
+    d =fltk.image(pos.x,pos.y,path,taile.x,taile.y)
+    return d
 
 
-    if x_texte < ax :
-        x_texte =  ax +10
-    
 
-    if remplissage:
-        t.rectangle(epaisseur=3, ax=ax, ay=ay, bx=bx, by=by, tag=nom, remplissage=remplissage)
-    else:
-        t.rectangle(epaisseur=3, ax=ax, ay=ay, bx=bx, by=by, tag=nom)
-
-    t.texte(taille=taille_t, chaine=texte, x=x_texte , y=y_texte , tag=nom)
-"""
+def creer_texte(pos:Vec2,taile:float,texte:str)->int:
+    id = fltk.texte(pos.x,pos.y,texte,taille=taile)
+    return id
 
 
-def creer_texte(pos:Vec2,taile:float,texte:str):
-    fltk.texte(pos.x,pos.y,texte,taille=taile)
-class bouton:
-    def __init__(self,pos:Vec2,
-                 dim:Vec2
-                 ,text:str,
-                 action_clique:Callable
-                 ) -> None:
-        logging.info(f"creation du bouton {text} a la position {pos} avec les dimensions {dim}")
-        self.id:list[int]=[]
-        global LARGEUR,HAUTEUR
-        self.p1:Vec2 =  pos+ dim/2
-        self.p2:Vec2  =  pos - dim/2
-        p = Vec2(self.p1.x,self.p2.y)
 
+class Bouton:
+    """
+    classe bouton pour genereer un bouton et ses intrecation dans le monde 
+    on  va voir si je me fais chiez a creer les etat quand la souris est dessus
+    """
+    def __init__(
+        self,
+        pos: Vec2,
+        dim: Vec2,
+        text: str,
+        action_clique: Callable[[], None],
+        couleur: str = "blue",
+        couleur_hover: str = "lightblue",
+        taille_texte: int = 20,
+        tag: Optional[str] = None
+    ) -> None:
+        logging.info(f"Création du bouton '{text}' à la position {pos} avec la dimension {dim}")
         
-
-        self.text:str = text
-        mots = text.split()
-
-        self.action_clique:Callable = action_clique
-        len_mot:int = 0
-        
-        
-
-        taille_texte:int =  20
-
-        self.activer:bool = False
-
-        self.pos_texte:Vec2 = p+ Vec2(-len(text)*taille_texte*0.35,taille_texte*0.5)
-
-
-    def action(self,ev):
-        logging.info(f"action du bouton {self.text}")
-        tev:str|None = fltk.type_ev(ev)
-        if tev != "ClicGauche":
-            return
-        x = fltk.abscisse(ev)
-        y = fltk.ordonnee(ev)
-        if x is None or y is None:
-            return
-
-        if  self.p2.x < x <self.p1.x and  self.p2.y <y <self.p1.y and self.activer == True:
-            print(f"clic sur le bouton {self.text}")
-            self.action_clique()
-
-
-    def set_area(self,area:tuple[Vec2,Vec2])->None:
-        """_summary_
-
-        Args:
-            area (tuple[Vec2,Vec2]): _description_
-        """
-        self.p1 =  area[0]
-        self.p2  =  area[1]
-    def get_area(self)->tuple[Vec2,Vec2]:
-        return (self.p1,self.p2)
-    
-    def set_text(self,text:str)->None:
+        self.pos = pos
+        self.dim = dim
         self.text = text
+        self.action_clique = action_clique
+        self.couleur = couleur
+        self.couleur_hover = couleur_hover
+        self.taille_texte = taille_texte
+        self.actif = True
+        self.hover = False
+        self.id_rect: Optional[int] = None
+        self.id_texte: Optional[int] = None
+        self.tag = tag
 
+    @property
+    def coin_haut_gauche(self) -> Vec2:
+        return self.pos - self.dim / 2
 
-    
-    def afficher(self):
-        """
-        va afficher le buton
-        """
+    @property
+    def coin_bas_droit(self) -> Vec2:
+        return self.pos + self.dim / 2
 
-        self.id.append(fltk.rectangle(self.p1.x,self.p1.y,self.p2.x,self.p2.y,
-                                      "blue" ,
-                                      epaisseur=5))
-        self.id.append(creer_texte(self.pos_texte,20,self.text))
-        self.activer = True
-    
+    def _calculer_pos_texte(self) -> Vec2:
+        """Calcule la position pour centrer le texte."""
+        largeur_texte, _ = fltk.taille_texte(self.text, taille=self.taille_texte)
+        return self.pos - Vec2(largeur_texte / 2, self.taille_texte / 2)
 
-        return
-    def suppr_affichage(self):
-        for i in self.id:
-            fltk.efface(i)
-        self.activer = False
-        return
-    
-    def suppr(self):
-        for i in self.id:
-            fltk.efface(i)
-        return
-    
+    def afficher(self) -> None:
+        """Affiche le bouton et son texte."""
+        logging.info(f"Affichage du bouton '{self.text}' à la position {self.pos} avec la dimension {self.dim}")
+        self.suppr_affichage()  # Nettoie les anciens IDs
+        self.id_rect = fltk.rectangle(
+            self.coin_haut_gauche.x, self.coin_haut_gauche.y,
+            self.coin_bas_droit.x, self.coin_bas_droit.y,
+            self.couleur_hover if self.hover else self.couleur,
+            epaisseur=5,
+        )
+        pos_texte = self._calculer_pos_texte()
+        self.id_texte = fltk.texte(
+            pos_texte.x, pos_texte.y,
+            self.text,
+            taille=self.taille_texte,
+        )
 
+    def suppr_affichage(self) -> None:
+        """Efface le bouton de l'écran."""
+        logging.info(f"Suppression de l'affichage du bouton '{self.text}'")
+        if self.id_rect:
+            fltk.efface(self.id_rect)
+        if self.id_texte:
+            fltk.efface(self.id_texte)
+        self.id_rect = None
+        self.id_texte = None
+
+    def action(self, ev) -> None:
+        """Gère les interactions avec le bouton."""
+        
+        if not self.actif:
+            return
+        tev = fltk.type_ev(ev)
+        if tev == "": 
+            x, y =  fltk.abscisse_souris(), fltk.ordonnee_souris()
+            if x is None or y is None:
+                return
+            self.hover = (
+                self.coin_haut_gauche.x < x < self.coin_bas_droit.x and
+                self.coin_haut_gauche.y < y < self.coin_bas_droit.y
+            )
+
+        
+        elif tev == "ClicGauche":
+            x, y = fltk.abscisse(ev), fltk.ordonnee(ev)
+            if (
+                x is not None and y is not None and
+                self.coin_haut_gauche.x < x < self.coin_bas_droit.x and
+                self.coin_haut_gauche.y < y < self.coin_bas_droit.y
+            ):
+                self.action_clique()
 
         
 
@@ -278,39 +251,36 @@ def creer_grille(taile:int,couleur:str):
 
 
 def test():
-    """_summary_
-
-    """
     afficher(True)
-    creer_grille(8,"blue")
-    creer_grille(16,"yellow")
-    creer_grille(32,"red")
-    
+    # Afficher une grille statique (pas besoin de recalculer à chaque frame)
+    creer_grille(32, "red")
 
+    # Position fixe pour le sprite
+    afficher_sprite("asset/joueur/mouton.png", Vec2(100, 100), Vec2(32, 32))
 
-    k = itertools.product(range(0,LARGEUR+1,16),range(0,HAUTEUR+1,16))
-
-    afficher_sprite("asset/joueur/mouton.png",Vec2(100,100),Vec2(32,32))
-
-    abj:bouton = bouton(Vec2(400,400),Vec2(100,100),"test",lambda : print("test"))
-    abj.afficher()
-
-    
-            
+    # Bouton avec gestion du hover
+    bouton_test = Bouton(
+        pos=Vec2(400, 400),
+        dim=Vec2(200, 60),
+        text="Test",
+        action_clique=lambda: print("Bouton cliqué !"),
+    )
+    bouton_test.afficher()
 
     while True:
-        ev =  fltk.donne_ev()
-        tev =  fltk.type_ev(ev)
+        ev = fltk.donne_ev()
+        tev = fltk.type_ev(ev)
+
+        # Gestion du hover
+        bouton_test.action(ev)
+
         swapbuffer()
-        time.sleep(0.1)
-        positionner_grille("asset/vert.jpg",Vec2(*next(k)),16)
-        abj.action(ev)
+        time.sleep(0.016)  # ~60 FPS
 
         if shouldclose(tev):
             break
 
     fermer()
-    return
 
 
 if __name__ == "__main__" :

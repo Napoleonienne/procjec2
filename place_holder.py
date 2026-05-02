@@ -1,59 +1,79 @@
+import graphisme
 from vect import Vec2 as vec2
 
-
-
-
-class tuile:
+class Tuile:
     """
-    classe de tuile qui va etre la classe de base pour les tuile du jeu
-
-    appararament j'ai fais plutot un syteme de bounding box
-
+    Classe de base pour les tuiles du jeu (système de bounding box).
+    Représente une tuile avec une position, une texture et une taille.
     """
-    def __init__(self,pos:vec2,texture:str,taille:int =32):
-        self.textture:str = texture
-        self.taille:int = taille
-        self.pos:vec2 = pos
+    def __init__(self, pos: vec2, texture: str, taille: vec2 = vec2(32, 32)):
+        self._texture: str = texture
+        self._taille: vec2 = taille
+        self._pos: vec2 = pos
 
-    def get_pos(self):
-        return self.pos
-    
-    def get_texture(self):
-        return self.textture
+    @property
+    def pos(self) -> vec2:
+        return self._pos
 
-    def get_taille(self):
-        return self.taille
+    @pos.setter
+    def pos(self, value: vec2):
+        self._pos = value
 
-    def set_pos(self,pos:vec2):
-        self.pos = pos
+    @property
+    def texture(self) -> str:
+        return self._texture
 
-    def set_taille(self,taille:int):
-        self.taille = int
+    @property
+    def taille(self) -> vec2:
+        return self._taille
 
-    
+    @taille.setter
+    def taille(self, value: vec2):
+        self._taille = value
 
-    
+    def afficher(self):
+        """Affiche la tuile à l'écran."""
+        graphisme.afficher_sprite(self._texture, self._pos, self._taille)
 
+    def collision(self, other: 'Tuile') -> bool:
+        """Vérifie si cette tuile entre en collision avec une autre (bounding box)."""
+        return (
+            self._pos.x < other._pos.x + other._taille.x and
+            self._pos.x + self._taille.x > other._pos.x and
+            self._pos.y < other._pos.y + other._taille.y and
+            self._pos.y + self._taille.y > other._pos.y
+        )
 
-class sprite:
+class Sprite:
     """
-    classe de sprite qui va etre la classe de base pour les personnage et les objet du jeu
-    qui a une position libre et une taille libre
+    Classe de base pour les personnages et objets du jeu.
+    Contrairement à Tuile, un Sprite a une position et une taille libres.
     """
-    def __init__(self,pos:vec2,texture:str):
-        self.texture:str = texture
-        self.taille:vec2 = vec2()
-        self.pos:vec2 = pos
+    def __init__(self, pos: vec2, texture: str, taille: vec2 = vec2(32, 32)):
+        self._texture: str = texture
+        self._taille: vec2 = taille
+        self._pos: vec2 = pos
 
+    @property
+    def pos(self) -> vec2:
+        return self._pos
 
-    def get_pos(self):
-        return self.pos
+    @pos.setter
+    def pos(self, value: vec2):
+        self._pos = value
 
-    def get_taille(self):
-        return self.taille
+    @property
+    def taille(self) -> vec2:
+        return self._taille
 
-    def set_pos(self,pos:vec2):
-        self.pos = pos
+    @taille.setter
+    def taille(self, value: vec2):
+        self._taille = value
 
-    def set_taille(self,taille:vec2):
-        self.taille = taille
+    @property
+    def texture(self) -> str:
+        return self._texture
+
+    def afficher(self):
+        """Affiche le sprite à l'écran."""
+        graphisme.afficher_sprite(self._texture, self._pos, self._taille)
