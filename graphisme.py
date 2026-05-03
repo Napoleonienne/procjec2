@@ -22,7 +22,17 @@ def resource_path(relative_path)->str:
     except AttributeError:
         base_path = os.path.abspath(".")
 
-    return os.path.join(base_path, relative_path)
+    res:str =os.path.join(base_path, relative_path)
+
+    try:
+        assert os.path.exists(res)
+    except AssertionError:
+        logging.error(f"Le fichier suivant n'existe pas : {res}")
+        res = os.path.join(base_path, "asset/missing.jpg") 
+        logging.warning(f"Utilisation du fichier de secours : {res}")
+    
+    return res
+    
 
 
 
@@ -130,7 +140,9 @@ def creer_texte(pos:Vec2,taile:float,texte:str)->int:
     id = fltk.texte(pos.x,pos.y,texte,taille=taile)
     return id
 
+def afficher_fond(screen,path:str):
 
+    fltk.image(LARGEUR/2,HAUTEUR/2,path,LARGEUR,HAUTEUR)
 
 class Bouton:
     """
@@ -290,6 +302,7 @@ def test():
     grille = Grille(32)
     grille.ajouter_tuile(Vec2(0, 0), "asset/vert.jpg")
     grille.afficher()
+    afficher_fond(None,"asset/vert.jpg")
 
 
     # Position fixe pour le sprite

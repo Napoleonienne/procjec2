@@ -20,7 +20,7 @@ def amorti(joueur: monde.joueur, tuile: Tuile) -> float:
             joueur.vitesse = 0
         if joueur.direction.x > 0: 
             joueur.position.x = tuile.coin_haut_gauche.x - joueur.sprite.taille.x / 2
-        elif joueur.direction.x < 0:  
+        elif joueur.direction.x < 0:   
             joueur.position.x = tuile.coin_bas_droit.x + joueur.sprite.taille.x / 2
 
 

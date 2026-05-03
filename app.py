@@ -1,3 +1,4 @@
+from calendar import c
 import itertools
 import logging
 import time
@@ -18,7 +19,8 @@ logging.basicConfig(
 
 
 class app:
-    menu_etat = True
+    etat = "menu"
+    #etats_possibles = ["menu","jeu","pause","gameover"]  a titre indicative
     dt =0
     lastframe =0
     def run(self):
@@ -39,8 +41,20 @@ class app:
             evenement =graphisme.get_evenement()
 
             firstframe = time.time_ns()
-            if app.menu_etat:
-                self.menu()
+          
+
+            match app.etat:
+                case "menu":
+                    self.menu()
+                case "jeu":
+                    pass
+                case "pause":
+                    pass
+                case "gameover":
+                    pass
+
+                case _:
+                    logging.warning(f"État inconnu : {app.etat}")
 
 
 

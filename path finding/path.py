@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-from xmlrpc.server import resolve_dotted_attribute
 import itertools
 
 def comparairson(n1,n2):
