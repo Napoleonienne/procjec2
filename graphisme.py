@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import fltk
 import vect
 import logging
@@ -25,12 +27,7 @@ def resource_path(relative_path)->str:
 
 
 Vec2 = vect.Vec2
-logging.basicConfig(
-    level=logging.INFO, 
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    filename='app.log',  
-    filemode='w'         
-)
+
 LARGEUR =800
 HAUTEUR =600
 
@@ -59,7 +56,7 @@ def swapbuffer():
     """
     fltk.mise_a_jour()
 
-def shouldclose(ev:str|None):
+def shouldclose(ev:evenement):
     """_summary_
 
     Args:
@@ -68,8 +65,8 @@ def shouldclose(ev:str|None):
     Returns:
         _type_: _description_
     """
-    logging.info(f"fin du programme avec l'event {ev}")
-    return ev == "Quitte"
+
+    return ev.type == "Quitte"
 def palier(vec:Vec2, taille_tuile:int)->Vec2:
     """fonction de snapping qui met une position dans la tuile apprprié
 
@@ -91,7 +88,7 @@ def palier(vec:Vec2, taille_tuile:int)->Vec2:
 
 
 
-def afficher_tuile(tuile:place_holder.tuile):
+def afficher_tuile(tuile:place_holder.Tuile):
     """_summary_
 
     Args:
@@ -99,11 +96,21 @@ def afficher_tuile(tuile:place_holder.tuile):
         pos (Vec2): position ou afficher la tuile
         taille (int, optional): taille de la tuile. Defaults to 32.
     """
-    pos:Vec2 = tuile.get_pos()
-    taille:int = tuile.get_taille()
-    texture:str = tuile.get_texture()
+    pos:Vec2 = tuile.pos
+    taille:int = tuile.taille
+    texture:str = tuile.texture
     nv_vec:Vec2 = palier(pos,taille)
-    fltk.image(nv_vec.x,nv_vec.y,texture,taille)
+    tuile.id = fltk.image(nv_vec.x,nv_vec.y,texture,taille)
+
+def effacer_tuile(tuile:place_holder.Tuile):
+    """_summary_
+
+    Args:
+        tuile (place_holder.Tuile): tuile a effacer
+    """
+    if tuile.id != None:
+        fltk.efface(tuile.id)
+        tuile.id = None
 
 def positionner_grille(path:str,tile:Vec2,taille:int =32):
     """_summary_
@@ -116,18 +123,6 @@ def positionner_grille(path:str,tile:Vec2,taille:int =32):
     nv:Vec2 =palier(tile,taille)
     fltk.image(nv.x,nv.y,path,taille,taille)
 
-
-def afficher_sprite(path:str,pos:Vec2,taile:Vec2):
-    """
-    permmet afficher un sprite quelque soit sa taille et sa position dans la fenetre
-
-    Args:
-        path (str): chemin de l'image
-        pos (Vec2): position ou afficher le sprite
-        taile (Vec2): taille du sprite
-    """
-    d =fltk.image(pos.x,pos.y,path,taile.x,taile.y)
-    return d
 
 
 
@@ -208,13 +203,12 @@ class Bouton:
         self.id_rect = None
         self.id_texte = None
 
-    def action(self, ev) -> None:
+    def action(self, ev:evenement) -> None:
         """Gère les interactions avec le bouton."""
         
         if not self.actif:
             return
-        tev = fltk.type_ev(ev)
-        if tev == "": 
+        if ev.type == "": 
             x, y =  fltk.abscisse_souris(), fltk.ordonnee_souris()
             if x is None or y is None:
                 return
@@ -224,7 +218,7 @@ class Bouton:
             )
 
         
-        elif tev == "ClicGauche":
+        elif ev.type == "ClicGauche":
             x, y = fltk.abscisse(ev), fltk.ordonnee(ev)
             if (
                 x is not None and y is not None and
@@ -249,16 +243,44 @@ class Grille:
     def __init__(self, taille_tuile: int):
         self.taille_tuile = taille_tuile
         self.tuiles = {}  # {(x, y): tuile}
-
     def ajouter_tuile(self, pos: Vec2, texture: str):
         pos_snappée = palier(pos, self.taille_tuile)
-        self.tuiles[(pos_snappée.x, pos_snappée.y)] = place_holder.tuile(pos_snappée, texture, self.taille_tuile)
+        self.tuiles[(pos_snappée.x, pos_snappée.y)] = place_holder.Tuile(pos_snappée, texture, self.taille_tuile)
+    
+    def get_tuile(self, pos: Vec2) -> Optional[place_holder.Tuile]:
+        pos_snappée = palier(pos, self.taille_tuile)
+        return self.tuiles.get((pos_snappée.x, pos_snappée.y), None)
+    
+
+
+    def supprimer_tuile(self, pos: Vec2):
+        pos_snappée = palier(pos, self.taille_tuile)
+        key = (pos_snappée.x, pos_snappée.y)
+        if key in self.tuiles:
+            del self.tuiles[key]
 
     def afficher(self):
         for tuile in self.tuiles.values():
             afficher_tuile(tuile)
+    def effacer(self):
+        for tuile in self.tuiles.values():
+            effacer_tuile(tuile)
+    def __iter__(self):
+        return itertools.chain(self.tuiles.values())
     
-    
+
+
+@dataclass
+class evenement:
+    type: str =""
+    data: dict | None = None
+
+
+def get_evenement():
+    res:evenement = evenement(type="", data={})
+    res.data = fltk.donne_ev()
+    res.type = fltk.type_ev(res.data)
+    return res
 
 
 
@@ -271,7 +293,6 @@ def test():
 
 
     # Position fixe pour le sprite
-    afficher_sprite("asset/joueur/mouton.png", Vec2(100, 100), Vec2(32, 32))
 
     # Bouton avec gestion du hover
     bouton_test = Bouton(
@@ -280,25 +301,34 @@ def test():
         text="Test",
         action_clique=lambda: print("Bouton cliqué !"),
     )
+
     bouton_test.afficher()
 
+
     while True:
-        ev = fltk.donne_ev()
-        tev = fltk.type_ev(ev)
+        evenement = get_evenement()
+
+        
 
         # Gestion du hover
-        bouton_test.action(ev)
+        bouton_test.action(evenement)
 
         swapbuffer()
         time.sleep(0.016)  # ~60 FPS
 
-        if shouldclose(tev):
+        if shouldclose(evenement):
             break
 
     fermer()
 
 
 if __name__ == "__main__" :
+    logging.basicConfig(
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    filename='graphisme.log',  
+    filemode='w'         
+)
     test()
 
         

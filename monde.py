@@ -16,10 +16,10 @@ class joueur:
     
     """
     def __init__(self,pos:vec2):
-        self0sprite:sprite = sprite(pos,resource_path("asset/joueur/mouton.png"))
+        self.sprite:sprite = sprite(pos,resource_path("asset/joueur/mouton.png"))
         self.position:vec2 =pos
-        self.vistesse:float =0.0
-        self.poid:float=12
+        self.vitesse:float =0.0
+        self.poids:float=12
 
         self.direction:vec2 =vec2()
 
@@ -36,7 +36,15 @@ class joueur:
         b = (self.position/i for i in range(24,0,-1))
     
     def afficher(self):
-        graphisme.afficher(self0sprite.texture,self.position)
+        graphisme.afficher(self.sprite.texture,self.position)
+
+    @property
+    def coin_haut_gauche(self) -> vec2:
+        return self.position - self.sprite.taille/2
+    @property
+    def coin_bas_droit(self) -> vec2:
+        return self.position + self.sprite.taille/2
+    
     
 
 
@@ -50,12 +58,14 @@ class niveau:
 
     
     """
-    def __init__(self):
+    def __init__(self,debut:vec2):
+        self.debut:vec2 = debut
         self.fond:str ="",      # Image de fond
-        self.decor:list[tuile] =[],     # Tuiles décoratives (sans collision)
-        self.terrain:list[tuile] =[],   # Tuiles solides (avec collision)
+        self.decor:graphisme.Grille =graphisme.Grille(32),     # Tuiles décoratives (sans collision)
+        self.terrain:graphisme.Grille =graphisme.Grille(32),   # Tuiles solides (avec collision)
         self.devant:list[sprite] = []     # Éléments de premier plan encore a determiner a utilit peut ere pour des decor plus complexe
     
+
     def afficher_fond(self):
         fltk.image(0,0,self.fond,HAUTEUR,LARGEUR)
     def afficher_decor(self):

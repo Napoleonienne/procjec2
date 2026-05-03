@@ -61,7 +61,7 @@ def cross(vecA:Vec2,vecB:Vec2)->float:
     """
     pour savoir la direction ou va le personnage
     """
-    return vecA.x*vecB.y+vecA.y*vecB.x
+    return vecA.x*vecB.y-vecA.y*vecB.x
 
 def rotate(vec:Vec2,angle:float)->Vec2:
     """_summary_
