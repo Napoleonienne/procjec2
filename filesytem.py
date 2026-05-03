@@ -17,20 +17,6 @@ vue autemp  de truc est charger sa va etre la partie sauvegarde asset et mettre 
 """
 class niveau:
     pass
-def resource_path(relative_path)->str:
-    """
-    Obtient le chemin absolu vers une ressource pour la compilation avec PyInstaller. 
-    ARGs:
-        relative_path:le chemin relative du fichier
-        
-    """
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
-
 
 
 def sauvegarder_niveau(niveau:niveau,name):
@@ -47,33 +33,8 @@ def sauvegarder_niveau(niveau:niveau,name):
 
 
 
-
-def préchaerger_niveau():
-    """_summary_
-
-    Args:
-        nom (str): _description_
-    """
-    temp: dict = dict()
-    ch_savegarde = Path(resource_path('niveau'))
-    for ch in ch_savegarde.glob(''):
-        with open(ch) as f:
-            d: dict = json.load(f)
-            temp[ch.stem] = niveau(d['fond'],d['decor'],d['terrain'])
-        
-
-
-
 def charger_niveau(nom:str) -> niveau | None:
-    ch_savegarde = Path(resource_path('niveau'))
-    fichier = ch_savegarde / f"{nom}.json"
-
-    for ch in ch_savegarde.glob(''):
-        if ch.stem == nom:
-            with open(ch) as f:
-                d: dict = json.load(f)
-                return niveau(d['fond'],d['decor'],d['terrain'])
-        
+ 
 
 
     return

@@ -60,6 +60,21 @@ def fermer():
     logging.info("fermeture de fenetre")
     fltk.ferme_fenetre()
 
+
+
+def afficher_sprite(chemin:str,pos:Vec2,taille:Vec2,tag:str = ""):
+    """_summary_
+
+    Args:
+        repere (bool, optional): _description_. Defaults to False.
+
+    """
+    fltk.image(pos.x,pos.y,chemin,taille.x,taille.y,tag=tag)
+
+    
+
+
+
 def swapbuffer():
     """
     permet echanger image avec celle pré gener par le gpu

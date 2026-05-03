@@ -5,6 +5,7 @@ import time
 
 import fltk
 import graphisme
+from menus import Menu
 
 
 logging.basicConfig(
@@ -29,9 +30,12 @@ class app:
         graphisme.fermer()
         logging.info("Boucle principale terminée.")
        
-    def menu(self):
-     
+    def menu_principal(self):
+        menuprincipal: Menu = Menu("menu principal","fichier jeux/fond/menu.png","fichier jeux/fond/logo.png")
         return
+    
+    def menu_pause(self):
+        menuPause :Menu = Menu("menu pause","fichier jeux/fond/pause.png")
 
 
     def mainloop(self):
