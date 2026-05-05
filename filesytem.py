@@ -146,8 +146,11 @@ def peupler_niveau(donne_niveau, niveau_charger,tranche:str):
 
 
 def supprimer_niveau(nom: str):
-    if not sauvegardes_dispo[nom].exists():
+    if sauvegardes_dispo.get(nom,False) or not sauvegardes_dispo[nom].exists() :
         return
+    logging.info(f"Suppression du niveau '{nom}'")
+    sauvegardes_dispo[nom].unlink()
+    del sauvegardes_dispo[nom]
     
 
 
