@@ -136,8 +136,19 @@ def charger_niveau(nom: str)-> niveau:
 
     return niveau_charger
 
-def peupler_niveau(donne_niveau, niveau_charger,tranche:str):
+def peupler_niveau(donne_niveau: dict, niveau_charger: niveau, tranche: str):
+    """_summary_
+
+    Args:
+        donne_niveau (dict): les donné du niveau charger a partir du json
+        niveau_charger (niveau): objecty qui reçoit
+        tranche (str): la tranche a peupler (avant, decor, terrain ou objet)
+    """
+    logging.debug(f"Peuplement de la tranche '{tranche}' du niveau chargé")
+
+
     for tuile_data in donne_niveau[tranche].values():
+
         pos = Vec2(tuile_data["pos"]["x"], tuile_data["pos"]["y"])
         taille = tuile_data["taille"]
         texture = tuile_data["texture"]
