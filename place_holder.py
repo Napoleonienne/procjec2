@@ -49,6 +49,16 @@ class Tuile:
     @property
     def coin_bas_droit(self) -> vec2:
         return self.pos + vec2(self.taille, self.taille) / 2
+    
+    def serialisation(self) -> dict:
+        """Convertit la tuile en un dictionnaire pour la sérialisation dans le json."""
+        return {
+            "pos": {"x": self.pos.x, "y": self.pos.y},
+            "taille": self.taille,
+            "texture": self.texture,
+            "property": self.property
+        }
+    
 
 
 
@@ -65,6 +75,9 @@ class Sprite:
         self._texture: str = texture
         self._taille: vec2 = taille
         self._pos: vec2 = pos
+        self.property = {
+            "solide": False,
+        }
 
     @property
     def pos(self) -> vec2:
@@ -85,6 +98,15 @@ class Sprite:
     @property
     def texture(self) -> str:
         return self._texture
+    
+    def serialisation(self) -> dict:
+        """Convertit le sprite en un dictionnaire pour la sérialisation dans le json."""
+        return {
+            "pos": {"x": self.pos.x, "y": self.pos.y},
+            "taille": {"x": self.taille.x, "y": self.taille.y},
+            "texture": self.texture,
+            "property": self.property
+        }
 
     
     @property

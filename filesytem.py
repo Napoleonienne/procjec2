@@ -1,9 +1,14 @@
-import os
-import sys
+import logging
+from operator import le
+from os import path
 from pathlib import Path
 import json
-from place_holder import tuile,sprite
-
+from turtle import st
+from vect import Vec2
+from monde import niveau
+from place_holder import Tuile, Sprite
+import os
+from graphisme import Grille
 """
 just pour charger les niveau, les asset meme si je vais laisser a fltk  et sauvegarder les niveau 
 pour l'instant j'essaye de voir quoi choisir pour sauvegarder peut etre un json ou un csv 
@@ -15,28 +20,134 @@ un syteme de tuile et de layout colle bien
 vue autemp  de truc est charger sa va etre la partie sauvegarde asset et mettre une id pour chaque point 
 
 """
-class niveau:
-    pass
+
+sauvegardes_dispo:dict[str ,Path] = {}
 
 
-def sauvegarder_niveau(niveau:niveau,name):
-    
-    
+def peupler_sauvegardes():
+    """
+    a lancer aux lancement de l'aplication
+    Peuple le dictionnaire des sauvegardes disponibles en scannant le dossier de sauvegarde.
+    """
+    global sauvegardes_dispo
+    sauvegardes_dispo.clear()
+    save_dir = Path(resource_path('fichier jeux/save'))
+    if not save_dir.exists():
+        logging.warning(f"Le dossier de sauvegarde '{save_dir}' n'existe pas. Création du dossier.")
+        save_dir.mkdir(parents=True, exist_ok=True)
+    for file in save_dir.glob('*.json'):
+        nom = file.stem
+        sauvegardes_dispo[nom] = file
+    logging.info(f"Sauvegardes disponibles : {list(sauvegardes_dispo.keys())}")
 
-    d = {"fond":niveau.fond,"decor":niveau.decor,"terrain":niveau.terrain}
-    ch_savegarde:Path = Path('fichier jeux/save').glob()
 
-    with open(ch_savegarde) as f:
-        json.dump(d,f)
+def resource_path(relative_path)->str:
+    """
+    Obtient le chemin absolu vers une ressource pour la compilation avec PyInstaller. 
+    ARGs:
+        relative_path:le chemin relative du fichier
         
+    """
+    logging.debug(f"graphisme : Obtention du chemin absolu pour la ressource '{relative_path}'")
+    try:
+        base_path = sys._MEIPASS # type: ignore
+    except AttributeError:
+        base_path = os.path.abspath(".")
+
+    res:str =os.path.join(base_path, relative_path)
+
+    try:
+        assert os.path.exists(res)
+    except AssertionError:
+        logging.error(f"Le fichier suivant n'existe pas : {res}")
+        res = os.path.join(base_path, "asset/missing.jpg") 
+        logging.warning(f"Utilisation du fichier de secours : {res}")
+    
+    return res
+
+def charger_options():
+    """Charge les options du jeu depuis un fichier JSON."""
+    options_path = Path('options.json')
+    try:
+        logging.info(f"Chargement des options depuis '{options_path}'")
+        assert options_path.exists()
+        with open(options_path, 'r', encoding='utf-8') as f:
+            options = json.load(f)
+            logging.info("Options chargées avec succès.")
+            return options
+    except (AssertionError, json.JSONDecodeError):
+        logging.error(f"Erreur lors du chargement des options depuis '{options_path}'")
+        raise Exception(f"Erreur lors du chargement des options depuis '{options_path}'")
+    return {}
+
+
+def sauvegarder_niveau(level: niveau, name: str):
+    """Sauvegarde le niveau dans un fichier JSON."""
+    logging.info(f"Sauvegarde du niveau '{name}'")
+    global sauvegardes_dispo
+    sauvegardes_dispo[name] = Path(resource_path(f"fichier jeux/save/{name}.json"))
+
+
+    level_serialiser = level.serialisation()
+
+    ch_savegarde = resource_path('fichier jeux/save') + f"/{name}.json"
+    ch_savegarde.parent.mkdir(parents=True, exist_ok=True)
+    with open(ch_savegarde, 'w', encoding='utf-8') as f:
+        json.dump(level_serialiser, f)
 
 
 
 
-def charger_niveau(nom:str) -> niveau | None:
- 
+def charger_niveau(nom: str)-> niveau:
+    """
+    permet de charger le niveau a partir d'un fichier .json et de le convertir en un objet niveau
+
+    Args:
+        nom (str): nom du niveau a charger
+    """
+    ch_savegarde = sauvegardes_dispo[nom]
+    logging.info(f"Chargement du niveau '{nom}'")
+    with open(ch_savegarde, 'r') as f:
+        donne_niveau = json.load(f)
+    
+    debut = Vec2(donne_niveau["debut"]["x"], donne_niveau["debut"]["y"])
+    fin = Vec2(donne_niveau["point_fin"]["x"], donne_niveau["point_fin"]["y"])
+    niveau_charger = niveau(debut, fin)
+    niveau_charger.fond = donne_niveau["fond"]
+    niveau_charger.avant = Grille(32)
+    niveau_charger.decor = Grille(16)
+    niveau_charger.terrain = Grille(16)
+    niveau_charger.objet = Grille(8)  
+
+    peupler_niveau(donne_niveau, niveau_charger, "avant")
+    peupler_niveau(donne_niveau, niveau_charger, "decor")
+    peupler_niveau(donne_niveau, niveau_charger, "terrain")
+    peupler_niveau(donne_niveau, niveau_charger, "objet")
 
 
-    return
+
+    for sprite_data in donne_niveau["devant"]:
+        pos = Vec2(sprite_data["pos"]["x"], sprite_data["pos"]["y"])
+        taille = Vec2(sprite_data["taille"]["x"], sprite_data["taille"]["y"])
+        texture = sprite_data["texture"]
+        sprite = Sprite(pos, texture, taille)
+        niveau_charger.devant.append(sprite)
+
+
+    return niveau_charger
+
+def peupler_niveau(donne_niveau, niveau_charger,tranche:str):
+    for tuile_data in donne_niveau[tranche].values():
+        pos = Vec2(tuile_data["pos"]["x"], tuile_data["pos"]["y"])
+        taille = tuile_data["taille"]
+        texture = tuile_data["texture"]
+        tuile = Tuile(pos, texture, taille)
+        niveau_charger.avant.ajouter_tuile(pos,tuile)
+
+
+def supprimer_niveau(nom: str):
+    if not sauvegardes_dispo[nom].exists():
+        return
+    
 
 

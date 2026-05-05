@@ -6,6 +6,8 @@ import time
 import fltk
 import graphisme
 from menus import Menu
+import filesytem
+
 
 
 logging.basicConfig(
@@ -21,11 +23,13 @@ logging.basicConfig(
 
 class app:
     etat = "menu"
-    #etats_possibles = ["menu","jeu","pause","gameover"]  a titre indicative
+    #etats_possibles = ["menu","jeu","pause","gameover", "editeur_niveau"]  a titre indicative
     dt =0
     lastframe =0
     def run(self):
         graphisme.afficher()
+        filesytem.peupler_sauvegardes()
+        
         self.mainloop()
         graphisme.fermer()
         logging.info("Boucle principale terminée.")
@@ -41,7 +45,7 @@ class app:
     def mainloop(self):
         logging.info("Démarrage de la boucle principale.")
         evenement =graphisme.get_evenement()
-        while not graphisme.shouldclose(evenement.type):
+        while not graphisme.shouldclose(evenement):
             evenement =graphisme.get_evenement()
 
             firstframe = time.time_ns()
@@ -49,16 +53,19 @@ class app:
 
             match app.etat:
                 case "menu":
-                    self.menu()
+                    self.menu_principal()
                 case "jeu":
                     pass
                 case "pause":
                     pass
                 case "gameover":
                     pass
+                case "editeur_niveau":
+                    pass
 
                 case _:
                     logging.warning(f"État inconnu : {app.etat}")
+                    raise ValueError(f"État inconnu : {app.etat}")
 
 
 

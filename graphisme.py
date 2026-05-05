@@ -1,12 +1,15 @@
 from dataclasses import dataclass
+import re
 
 import fltk
 import vect
 import logging
 import time
+import itertools
 import os
 import sys
-from typing import Optional, Callable
+from typing import Optional, Callable, Tuple
+from tkinter import Tk, Event as TkEvent
 import place_holder
 
 
@@ -17,8 +20,9 @@ def resource_path(relative_path)->str:
         relative_path:le chemin relative du fichier
         
     """
+    logging.debug(f"graphisme : Obtention du chemin absolu pour la ressource '{relative_path}'")
     try:
-        base_path = sys._MEIPASS
+        base_path = sys._MEIPASS # type: ignore
     except AttributeError:
         base_path = os.path.abspath(".")
 
@@ -61,24 +65,37 @@ def fermer():
     fltk.ferme_fenetre()
 
 
-
-def afficher_sprite(chemin:str,pos:Vec2,taille:Vec2,tag:str = ""):
-    """_summary_
+def afficher_sprite(sprite:place_holder.Sprite):
+    """permet afficher un object sprite
 
     Args:
-        repere (bool, optional): _description_. Defaults to False.
-
+        sprite (place_holder.Sprite): _description_
     """
-    fltk.image(pos.x,pos.y,chemin,taille.x,taille.y,tag=tag)
+    logging.info(f"graphisme :Affichage du sprite à la position {sprite.pos} avec la texture '{sprite.texture}' et la taille {sprite.taille}")
+
+    fltk.image(sprite.pos.x, sprite.pos.y, sprite.texture, sprite.taille.x, sprite.taille.y)
+
 
     
+def fleche(pos1:Vec2,pos2:Vec2):
+    """
+    permet afficher une fleche entre deux point
 
+    Args:
+        pos1 (Vec2): position de depart
+        pos2 (Vec2): position d'arriver
+    """
+    logging.info(f"graphisme : Affichage d'une flèche de {pos1} à {pos2}")
+
+
+    fltk.fleche(pos1.x,pos1.y,pos2.x,pos2.y,epaisseur=10,couleur="red")
 
 
 def swapbuffer():
     """
     permet echanger image avec celle pré gener par le gpu
     """
+    logging.info("graphisme : Echange du buffer pour afficher la nouvelle image")
     fltk.mise_a_jour()
 
 def shouldclose(ev:evenement):
@@ -90,6 +107,7 @@ def shouldclose(ev:evenement):
     Returns:
         _type_: _description_
     """
+    logging.debug(f"graphisme : Vérification de l'événement pour la fermeture de la fenêtre : {ev.type}")
 
     return ev.type == "Quitte"
 def palier(vec:Vec2, taille_tuile:int)->Vec2:
@@ -103,7 +121,7 @@ def palier(vec:Vec2, taille_tuile:int)->Vec2:
         Vec2: coordonné de la case ou est le point vec
     """
   
-
+    logging.debug(f"graphisme : Snapping de la position {vec} à la grille avec une taille de tuile de {taille_tuile}")
     new_vec: Vec2 = Vec2(
         (vec.x + taille_tuile / 2) // taille_tuile * taille_tuile,
         (vec.y + taille_tuile / 2) // taille_tuile * taille_tuile
@@ -121,6 +139,7 @@ def afficher_tuile(tuile:place_holder.Tuile):
         pos (Vec2): position ou afficher la tuile
         taille (int, optional): taille de la tuile. Defaults to 32.
     """
+    logging.info(f"graphisme : Affichage de la tuile à la position {tuile.pos} avec la texture '{tuile.texture}' et la taille {tuile.taille}")
     pos:Vec2 = tuile.pos
     taille:int = tuile.taille
     texture:str = tuile.texture
@@ -133,6 +152,7 @@ def effacer_tuile(tuile:place_holder.Tuile):
     Args:
         tuile (place_holder.Tuile): tuile a effacer
     """
+    logging.info(f"graphisme : Effacement de la tuile à la position {tuile.pos} avec la texture '{tuile.texture}' et la taille {tuile.taille}")
     if tuile.id != None:
         fltk.efface(tuile.id)
         tuile.id = None
@@ -175,7 +195,7 @@ class Bouton:
         taille_texte: int = 20,
         tag: Optional[str] = None
     ) -> None:
-        logging.info(f"Création du bouton '{text}' à la position {pos} avec la dimension {dim}")
+        logging.info(f"graphisme : Création du bouton '{text}' à la position {pos} avec la dimension {dim}")
         
         self.pos = pos
         self.dim = dim
@@ -185,7 +205,7 @@ class Bouton:
         self.couleur_hover = couleur_hover
         self.taille_texte = taille_texte
         self.actif = True
-        self.hover = False
+        self.hover = False # je sais pas comment faire a part le laisser tourner pendant tout execution de la fenetre pour verifier  mais sa me parait pas ouf
         self.id_rect: Optional[int] = None
         self.id_texte: Optional[int] = None
         self.tag = tag
@@ -230,23 +250,29 @@ class Bouton:
         self.id_rect = None
         self.id_texte = None
 
+    def dessus(self, pos: Vec2) -> bool:
+        """Vérifie si une position est au-dessus du bouton."""
+        logging.info(f"graphisme : Vérification si la position {pos} est au-dessus du bouton '{self.text}'")
+        x, y =  fltk.abscisse_souris(), fltk.ordonnee_souris()
+        if x is None or y is None:
+            return False
+        hover = (
+            self.coin_haut_gauche.x < x < self.coin_bas_droit.x and
+            self.coin_haut_gauche.y < y < self.coin_bas_droit.y
+        )
+        return hover
+
     def action(self, ev:evenement) -> None:
         """Gère les interactions avec le bouton."""
-        
+        logging.info(f"graphisme : Gestion de l'événement sur le bouton '{self.text}'")
         if not self.actif:
             return
-        if ev.type == "": 
-            x, y =  fltk.abscisse_souris(), fltk.ordonnee_souris()
-            if x is None or y is None:
-                return
-            self.hover = (
-                self.coin_haut_gauche.x < x < self.coin_bas_droit.x and
-                self.coin_haut_gauche.y < y < self.coin_bas_droit.y
-            )
+  
+  
 
         
         elif ev.type == "ClicGauche":
-            x, y = fltk.abscisse(ev), fltk.ordonnee(ev)
+            x, y = fltk.abscisse(ev.data), fltk.ordonnee(ev.data) # type: ignore
             if (
                 x is not None and y is not None and
                 self.coin_haut_gauche.x < x < self.coin_bas_droit.x and
@@ -265,14 +291,13 @@ class Bouton:
 
     
 
-import itertools
 class Grille:
     def __init__(self, taille_tuile: int):
         self.taille_tuile = taille_tuile
         self.tuiles = {}  # {(x, y): tuile}
-    def ajouter_tuile(self, pos: Vec2, texture: str):
+    def ajouter_tuile(self, pos: Vec2,tuile:place_holder.Tuile):
         pos_snappée = palier(pos, self.taille_tuile)
-        self.tuiles[(pos_snappée.x, pos_snappée.y)] = place_holder.Tuile(pos_snappée, texture, self.taille_tuile)
+        self.tuiles[(pos_snappée.x, pos_snappée.y)] = tuile
     
     def get_tuile(self, pos: Vec2) -> Optional[place_holder.Tuile]:
         pos_snappée = palier(pos, self.taille_tuile)
@@ -292,19 +317,30 @@ class Grille:
     def effacer(self):
         for tuile in self.tuiles.values():
             effacer_tuile(tuile)
+
+    def serialisation(self) -> dict[tuple[float, float], dict]:
+        """Convertit la grille en une liste de dictionnaires pour la sérialisation dans le json."""
+        logging.info("graphisme : Sérialisation de la grille pour le JSON")
+        j ={}
+        for key, tuile in self.tuiles.items():
+            j[(tuile.pos.x, tuile.pos.y)] = tuile.serialisation()
+        return j
+            
+    
     def __iter__(self):
         return itertools.chain(self.tuiles.values())
-    
+
+
 
 
 @dataclass
 class evenement:
-    type: str =""
-    data: dict | None = None
+    type: str | None =""
+    data: tuple | None = None
 
 
 def get_evenement():
-    res:evenement = evenement(type="", data={})
+    res:evenement = evenement(type=None, data=None)
     res.data = fltk.donne_ev()
     res.type = fltk.type_ev(res.data)
     return res
