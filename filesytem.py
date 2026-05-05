@@ -9,17 +9,7 @@ from monde import niveau
 from place_holder import Tuile, Sprite
 import os
 from graphisme import Grille
-"""
-just pour charger les niveau, les asset meme si je vais laisser a fltk  et sauvegarder les niveau 
-pour l'instant j'essaye de voir quoi choisir pour sauvegarder peut etre un json ou un csv 
-pckle mais je pense pas je pourrait pas modifier le fichier directement 
-    
-csv est poour l'instant ce qui collle le mieux avec le principe de niveau
-un syteme de tuile et de layout colle bien
 
-vue autemp  de truc est charger sa va etre la partie sauvegarde asset et mettre une id pour chaque point 
-
-"""
 
 sauvegardes_dispo:dict[str ,Path] = {}
 
@@ -30,12 +20,11 @@ def peupler_sauvegardes():
     Peuple le dictionnaire des sauvegardes disponibles en scannant le dossier de sauvegarde.
     """
     global sauvegardes_dispo
-    sauvegardes_dispo.clear()
-    save_dir = Path(resource_path('fichier jeux/save'))
-    if not save_dir.exists():
-        logging.warning(f"Le dossier de sauvegarde '{save_dir}' n'existe pas. Création du dossier.")
-        save_dir.mkdir(parents=True, exist_ok=True)
-    for file in save_dir.glob('*.json'):
+    ch_sauvegarde= Path(resource_path('fichier jeux/save'))
+    if not ch_sauvegarde.exists():
+        logging.warning(f"Le dossier de sauvegarde '{ch_sauvegarde}' n'existe pas. Création du dossier.")
+        ch_sauvegarde.mkdir(parents=True, exist_ok=True)
+    for file in ch_sauvegarde.glob('*.json'):
         nom = file.stem
         sauvegardes_dispo[nom] = file
     logging.info(f"Sauvegardes disponibles : {list(sauvegardes_dispo.keys())}")
