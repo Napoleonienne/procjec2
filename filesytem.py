@@ -81,6 +81,7 @@ def sauvegarder_niveau(level: niveau, name: str):
 
     ch_savegarde = resource_path('fichier jeux/save') + f"/{name}.json"
     ch_savegarde.parent.mkdir(parents=True, exist_ok=True)
+    
     with open(ch_savegarde, 'w', encoding='utf-8') as f:
         json.dump(level_serialiser, f)
 
