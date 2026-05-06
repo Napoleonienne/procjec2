@@ -42,8 +42,9 @@ def resource_path(relative_path)->str:
 
 Vec2 = vect.Vec2
 
-LARGEUR =800
+
 HAUTEUR =600
+LARGEUR =round(HAUTEUR*16/9)
 
 
 
@@ -132,14 +133,14 @@ def palier(vec:Vec2, taille_tuile:int)->Vec2:
 
 
 def afficher_tuile(tuile:place_holder.Tuile):
-    """_summary_
+    """permet afficher une tuile
 
     Args:
         path (str): chemin de l'image
         pos (Vec2): position ou afficher la tuile
         taille (int, optional): taille de la tuile. Defaults to 32.
     """
-    logging.info(f"graphisme : Affichage de la tuile à la position {tuile.pos} avec la texture '{tuile.texture}' et la taille {tuile.taille}")
+    logging.info(f"graphisme : Affichage de la tuile à la position {str(tuile.pos)} avec la texture '{tuile.texture}' et la taille {str(tuile.taille)}")
     pos:Vec2 = tuile.pos
     taille:int = tuile.taille
     texture:str = tuile.texture
@@ -175,7 +176,7 @@ def creer_texte(pos:Vec2,taile:float,texte:str)->int:
     id = fltk.texte(pos.x,pos.y,texte,taille=taile)
     return id
 
-def afficher_fond(screen,path:str):
+def afficher_fond(path:str):
 
     fltk.image(LARGEUR/2,HAUTEUR/2,path,LARGEUR,HAUTEUR)
 
@@ -340,6 +341,11 @@ class evenement:
 
 
 def get_evenement():
+    """obtie juste les  evenemznt
+
+    Returns:
+        _type_: _description_
+    """
     res:evenement = evenement(type=None, data=None)
     res.data = fltk.donne_ev()
     res.type = fltk.type_ev(res.data)

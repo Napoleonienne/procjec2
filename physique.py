@@ -1,3 +1,5 @@
+import logging
+
 from place_holder import Tuile
 import vect
 import monde
@@ -11,7 +13,7 @@ def collision(obj:Tuile, joueur: monde.joueur) -> bool:
 
 
 
-def amorti(joueur: monde.joueur, tuile: Tuile) -> float:
+def amorti(joueur: monde.joueur, tuile: Tuile) :
         if joueur.direction.y > 0:  # En train de tomber
             joueur.position.y = tuile.coin_haut_gauche.y - joueur.sprite.taille.y / 2
             joueur.vitesse = 0
@@ -24,10 +26,21 @@ def amorti(joueur: monde.joueur, tuile: Tuile) -> float:
             joueur.position.x = tuile.coin_bas_droit.x + joueur.sprite.taille.x / 2
 
 
+def terrain_glissant():
+     
 
+    return
 
 def appliquer_physique(joueur: monde.joueur, dt: float,monde:monde.niveau):
-    """Applique la physique au joueur en fonction des tuiles environnantes."""
+    """apllique la physique du aux jour
+
+    Args:
+        joueur (monde.joueur): _description_
+        dt (float): _description_
+        monde (monde.niveau): niveau actuel
+    """
+
+    logging.info(f"applique la physique par rapport aux taux")
     for tuile in monde.terrain:
             if collision(tuile, joueur):
                 if tuile.property["amortissante"]:  
@@ -37,5 +50,5 @@ def appliquer_physique(joueur: monde.joueur, dt: float,monde:monde.niveau):
                     joueur.position = monde.debut # Exemple de réinitialisation
                     joueur.vitesse = 0
                     joueur.direction = vect.Vec2()
-                elif tuile.property["solide"]:
+                elif tuile.property[""]:
 

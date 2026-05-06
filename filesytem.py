@@ -4,6 +4,7 @@ from os import path
 from pathlib import Path
 import json
 from turtle import st
+from typing import Optional
 from vect import Vec2
 from monde import niveau
 from place_holder import Tuile, Sprite
@@ -24,13 +25,17 @@ def peupler_sauvegardes():
     if not ch_sauvegarde.exists():
         logging.warning(f"Le dossier de sauvegarde '{ch_sauvegarde}' n'existe pas. Création du dossier.")
         ch_sauvegarde.mkdir(parents=True, exist_ok=True)
+
+
     for file in ch_sauvegarde.glob('*.json'):
         nom = file.stem
         sauvegardes_dispo[nom] = file
+
+    
     logging.info(f"Sauvegardes disponibles : {list(sauvegardes_dispo.keys())}")
 
 
-def resource_path(relative_path)->str:
+def resource_path(relative_path)->Optional[str]:
     """
     Obtient le chemin absolu vers une ressource pour la compilation avec PyInstaller. 
     ARGs:
@@ -48,9 +53,9 @@ def resource_path(relative_path)->str:
     try:
         assert os.path.exists(res)
     except AssertionError:
-        logging.error(f"Le fichier suivant n'existe pas : {res}")
-        res = os.path.join(base_path, "asset/missing.jpg") 
-        logging.warning(f"Utilisation du fichier de secours : {res}")
+        logging.error(f"Le fichier niveay n'existe pas : {res}")
+        return None
+     
     
     return res
 

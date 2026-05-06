@@ -2,6 +2,7 @@ import logging
 from os import name
 from pathlib import Path
 from dataclasses import dataclass
+from typing import overload
 from graphisme import HAUTEUR, LARGEUR
 
 import graphisme
@@ -40,8 +41,8 @@ class joueur:
         return self.vitesse
 
     
-    def afficher(self):
-        self.sprite.afficher()
+    def afficher(self) -> None:
+        graphisme.afficher_sprite(self.sprite)
 
     @property
     def coin_haut_gauche(self) -> vec2:
@@ -65,7 +66,20 @@ class niveau:
 
     
     """
+    @overload
+    def __init__(self):
+        pass
+    
+
+
     def __init__(self,debut:vec2,fin:vec2):
+        """_summary_
+
+        Args:
+            debut (vec2): debut du niveau
+            fin (vec2): fin du niveau
+        """
+        logging.debug(f"creation du niveau")
         self.debut:vec2 = debut
         self.fond:str = ""      # Image de fond
         self.avant : graphisme.Grille = graphisme.Grille(32)    #aux cas ou
@@ -75,10 +89,15 @@ class niveau:
         self.devant:list[Sprite] = []     #  encore a determiner a utilit peut ere pour des decor plus complexe
 
         self.point_fin:vec2 = vec2(0,0) # Point d'arrivé du niveau
+
+
     
 
     def afficher_fond(self):
+        
         fltk.image(0,0,self.fond,HAUTEUR,LARGEUR)
+
+
     def afficher_decor(self):
         for tuile in self.decor:
             graphisme.positionner_grille(tuile.textture,tuile.pos)
@@ -98,14 +117,13 @@ class niveau:
             dict[str, any]: le niveau serialisé sous forme de dictionnaire {
                 "debut": {"x": self.debut.x, "y": self.debut.y}, debut du niveau
                 "point_fin": {"x": self.point_fin.x, "y": self.point_fin.y}, fin du niveau
-                "fond": self.fond,   string de l'image de fond
-                "avant": self.avant.serialisation(), serialisation de la grille avant de 32 pixels
-                "decor": self.decor.serialisation(), serialisation de la grille decor de 16 pixels
-                "terrain": self.terrain.serialisation(), serialisation de la grille terrain de 16 pixels
-                "objet": self.objet.serialisation(), serialisation de la grille objet de 8 pixels
-                "devant": [sprite.serialisation() for sprite in self.devant], serialisation de la liste de sprite devant
-        
-            
+                "fond":  string de l'image de fond
+                "avant":  serialisation de la grille avant de 32 pixels
+                "decor": serialisation de la grille decor de 16 pixels
+                "terrain":  serialisation de la grille terrain de 16 pixels
+                "objet":  serialisation de la grille objet de 8 pixels
+                "devant":  for sprite in self.devant], serialisation de la liste de sprite devant
+      
             }
 
         """
