@@ -22,10 +22,10 @@ class Menu:
 
     def afficher(self):
         if self.fond:
-            graphisme.afficher_fond(self.fond)
+            graphisme.afficher_fond(self.fond,tag=self.name)
         if self.logo:
             j =place_holder.Sprite(self.pos_logo,self.logo,self.dim_logo)
-            graphisme.afficher_sprite(j)
+            graphisme.afficher(j, tag=f"{self.name}")
         for bouton in self.bouton:
             bouton.afficher()
 

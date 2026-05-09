@@ -7,7 +7,7 @@ class Object2d:
     classe de base pour tout les object pour l'instant sprite et tuile mais je verrez plus tard pour ajouter plus
     """
 
-    def __init__(self, pos: vec2, texture: str, taille: vec2 | int):
+    def __init__(self, pos: vec2, texture: str, taille: vec2 | int,tag:str="") :
         """
         Args:
             pos (vec2): Position centrale de l'objet.
@@ -19,6 +19,7 @@ class Object2d:
         self.id: int | None = None
         self._texture: str = texture
         self._pos: vec2 = pos
+        self.tag: str = tag
 
         if isinstance(taille, int):
             self._taille: vec2 = vec2(taille, taille)
@@ -54,12 +55,12 @@ class Object2d:
 
     @property
     def coin_haut_gauche(self) -> vec2:
-        """Coin haut-gauche du rectangle de collision."""
+        """Coin haut-gauche du rectangle"""
         return self.pos - self.taille / 2
 
     @property
     def coin_bas_droit(self) -> vec2:
-        """Coin bas-droit du rectangle de collision."""
+        """Coin bas-droit du rectangle"""
         return self.pos + self.taille / 2
 
     def serialisation(self) -> dict:
@@ -74,12 +75,12 @@ class Object2d:
 
 class Sprite(Object2d):
     """Classe pour les sprites (joueur, objets mobiles, etc.)."""
-    def __init__(self, pos: vec2, texture: str, taille: vec2 = vec2(32, 32)):
+    def __init__(self, pos: vec2, texture: str, taille: vec2,tag:str=""):
         """
         Args:
             taille (vec2): Taille du sprite (rectangle).
         """
-        super().__init__(pos, texture, taille)
+        super().__init__(pos, texture, taille, tag)
         # Propriétés spécifiques aux sprites (si besoin)
         self.property.update({
             "solide": False,
@@ -91,7 +92,7 @@ class Sprite(Object2d):
 
 class Tuile(Object2d):
     """Classe pour les tuiles du jeu (blocs du niveau)."""
-    def __init__(self, pos: vec2, texture: str, taille: int = 32):
+    def __init__(self, pos: vec2, texture: str, taille: int = 32, tag: str = ""):
         """
         Args:
             taille (int): Taille du côté de la tuile (carrée).

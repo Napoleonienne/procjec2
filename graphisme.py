@@ -68,18 +68,6 @@ def fermer():
     fltk.ferme_fenetre()
 
 
-def afficher_sprite(sprite:place_holder.Sprite):
-    """permet afficher un object sprite
-
-    Args:
-        sprite (place_holder.Sprite): _description_
-    """
-    logging.info(f"graphisme :Affichage du sprite à la position {sprite.pos} avec la texture '{sprite.texture}' et la taille {sprite.taille}")
-
-    fltk.image(sprite.pos.x, sprite.pos.y, sprite.texture, sprite.taille.x, sprite.taille.y)
-
-
-    
 def fleche(pos1:Vec2,pos2:Vec2):
     """
     permet afficher une fleche entre deux point
@@ -101,7 +89,7 @@ def swapbuffer():
     logging.info("graphisme : Echange du buffer pour afficher la nouvelle image")
     fltk.mise_a_jour()
 
-def shouldclose(ev:evenement|None):
+def shouldclose(ev:evenement):
     """_summary_
 
     Args:
@@ -134,42 +122,6 @@ def palier(vec:Vec2, taille_tuile:int)->Vec2:
 
 
 
-def afficher_tuile(tuile:place_holder.Tuile):
-    """permet afficher une tuile
-
-    Args:
-        path (str): chemin de l'image
-        pos (Vec2): position ou afficher la tuile
-        taille (int, optional): taille de la tuile. Defaults to 32.
-    """
-    logging.info(f"graphisme : Affichage de la tuile à la position {str(tuile.pos)} avec la texture '{tuile.texture}' et la taille {str(tuile.taille)}")
-    pos:Vec2 = tuile.pos
-    taille:int = tuile.taille
-    texture:str = tuile.texture
-    nv_vec:Vec2 = palier(pos,taille)
-    tuile.id = fltk.image(nv_vec.x,nv_vec.y,texture,taille)
-
-def effacer_tuile(tuile:place_holder.Tuile):
-    """_summary_
-
-    Args:
-        tuile (place_holder.Tuile): tuile a effacer
-    """
-    logging.info(f"graphisme : Effacement de la tuile à la position {tuile.pos} avec la texture '{tuile.texture}' et la taille {tuile.taille}")
-    if tuile.id != None:
-        fltk.efface(tuile.id)
-        tuile.id = None
-
-def positionner_grille(path:str,tile:Vec2,taille:int =32):
-    """_summary_
-
-    Args:
-        path (str): chemin 
-        tile (Vec2): position dans la grille
-    """
-
-    nv:Vec2 =palier(tile,taille)
-    fltk.image(nv.x,nv.y,path,taille,taille)
 
 
 
@@ -178,9 +130,10 @@ def creer_texte(pos:Vec2,taile:float,texte:str)->int:
     id = fltk.texte(pos.x,pos.y,texte,taille=taile)
     return id
 
-def afficher_fond(path:str):
+def afficher_fond(path:str,tag):
 
-    fltk.image(LARGEUR/2,HAUTEUR/2,path,LARGEUR,HAUTEUR)
+    fltk.image(LARGEUR/2,HAUTEUR/2,path,LARGEUR,HAUTEUR,tag=tag)
+
 
 class Bouton:
     """
@@ -288,7 +241,15 @@ class Bouton:
 
 
 
+def afficher(object: place_holder.Object2d,tag:str=""):
+    """permet d'afficher un object2d
 
+    Args:
+        object (place_holder.Object2d): _description_
+        tag (str): Tag pour l'objet
+    """
+    logging.info(f"graphisme : Affichage de l'objet à la position {object.pos} avec la texture '{object.texture}' et la taille {object.taille}")
+    fltk.image(object.pos.x, object.pos.y, object.texture, object.taille.x, object.taille.y, tag=tag)
 
 
 
@@ -325,7 +286,7 @@ class Grille:
 
     def afficher(self):
         for tuile in self.tuiles.values():
-            afficher_tuile(tuile)
+            afficher(tuile)
     def effacer(self):
         for tuile in self.tuiles.values():
             effacer_tuile(tuile)
