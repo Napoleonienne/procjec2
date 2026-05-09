@@ -1,9 +1,11 @@
-from app import *
+from app import app
 import logging
 
 
-
-py = app()
-if __name__ =="__main__":
+def main():
+    py = app()
     py.run()
 
+
+if __name__ == "__main__":
+    main()

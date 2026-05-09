@@ -1,15 +1,21 @@
 import logging
 from pathlib import Path
 import json
-from typing import Optional
 from vect import Vec2
 from monde import niveau
 from place_holder import Tuile, Sprite
-import os
+import graphisme
 from graphisme import Grille
 
 
-sauvegardes_dispo:dict[str ,Path] = {}
+sauvegardes_dispo: dict[str, Path] = {}
+
+
+def dossier_sauvegarde() -> Path:
+    base_path = Path.home() / ".saute_mouton"
+    chemin = base_path / "save"
+    chemin.mkdir(parents=True, exist_ok=True)
+    return chemin
 
 
 def peupler_sauvegardes():
@@ -18,13 +24,8 @@ def peupler_sauvegardes():
     Peuple le dictionnaire des sauvegardes disponibles en scannant le dossier de sauvegarde.
     """
     global sauvegardes_dispo
-    ch_sauvegarde= Path(resource_path('fichier jeux/save'))
-    if not ch_sauvegarde.exists():
-        logging.warning(f"Le dossier de sauvegarde '{ch_sauvegarde}' n'existe pas. Création du dossier.")
-        ch_sauvegarde.mkdir(parents=True, exist_ok=True)
-
-
-    for file in ch_sauvegarde.glob('*.json'):
+    ch_sauvegarde = dossier_sauvegarde()
+    for file in ch_sauvegarde.glob("*.json"):
         nom = file.stem
         sauvegardes_dispo[nom] = file
 
@@ -32,41 +33,24 @@ def peupler_sauvegardes():
     logging.info(f"Sauvegardes disponibles : {list(sauvegardes_dispo.keys())}")
 
 
-def resource_path(relative_path)->Optional[str]:
-    """
-    Obtient le chemin absolu vers une ressource pour la compilation avec PyInstaller. 
-    ARGs:
-        relative_path:le chemin relative du fichier
-        
-    """
-    logging.debug(f"graphisme : Obtention du chemin absolu pour la ressource '{relative_path}'")
-    try:
-        base_path = sys._MEIPASS # type: ignore
-    except AttributeError:
-        base_path = os.path.abspath(".")
-
-    res:str =os.path.join(base_path, relative_path)
-
-    try:
-        assert os.path.exists(res)
-    except AssertionError:
-        logging.error(f"Le fichier niveay n'existe pas : {res}")
-        return None
-     
-    
-    return res
-
 def charger_options():
     """Charge les options du jeu depuis un fichier JSON."""
-    options_path = Path('options.json')
+    options_path = Path(graphisme.chemin_absolue("fichier_jeux/option jeux/option.json"))
     try:
         logging.info(f"Chargement des options depuis '{options_path}'")
         assert options_path.exists()
         with open(options_path, 'r', encoding='utf-8') as f:
             options = json.load(f)
+            fenetre = options.get("fenetre")
+            if not isinstance(fenetre, dict):
+                raise ValueError("Champ 'fenetre' manquant dans les options")
+            largeur = fenetre.get("largeur")
+            hauteur = fenetre.get("hauteur")
+            if not isinstance(largeur, int) or not isinstance(hauteur, int):
+                raise ValueError("Les dimensions de fenêtre doivent être des entiers")
             logging.info("Options chargées avec succès.")
             return options
-    except (AssertionError, json.JSONDecodeError):
+    except (AssertionError, json.JSONDecodeError, ValueError):
         logging.error(f"Erreur lors du chargement des options depuis '{options_path}'")
         raise Exception(f"Erreur lors du chargement des options depuis '{options_path}'")
     return {}
@@ -76,15 +60,15 @@ def sauvegarder_niveau(level: niveau, name: str):
     """Sauvegarde le niveau dans un fichier JSON."""
     logging.info(f"Sauvegarde du niveau '{name}'")
     global sauvegardes_dispo
-    sauvegardes_dispo[name] = Path(resource_path(f"fichier jeux/save/{name}.json"))
+    ch_sauvegarde = dossier_sauvegarde() / f"{name}.json"
+    sauvegardes_dispo[name] = ch_sauvegarde
 
 
     level_serialiser = level.serialisation()
 
-    ch_savegarde = resource_path('fichier jeux/save') + f"/{name}.json"
-    ch_savegarde.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(ch_savegarde, 'w', encoding='utf-8') as f:
+    ch_sauvegarde.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(ch_sauvegarde, "w", encoding="utf-8") as f:
         json.dump(level_serialiser, f)
 
 
@@ -139,21 +123,27 @@ def peupler_niveau(donne_niveau: dict, niveau_charger: niveau, tranche: str):
     logging.debug(f"Peuplement de la tranche '{tranche}' du niveau chargé")
 
 
+    grille = getattr(niveau_charger, tranche)
     for tuile_data in donne_niveau[tranche].values():
 
         pos = Vec2(tuile_data["pos"]["x"], tuile_data["pos"]["y"])
         taille = tuile_data["taille"]
+        if isinstance(taille, dict):
+            if taille["x"] != taille["y"]:
+                raise ValueError(
+                    f"Les tuiles doivent être carrées dans la tranche '{tranche}' pour la position {pos}"
+                )
+            taille = taille["x"]
         texture = tuile_data["texture"]
         tuile = Tuile(pos, texture, taille)
-        niveau_charger.avant.ajouter_tuile(pos,tuile)
+        tuile.property.update(tuile_data.get("property", {}))
+        grille.ajouter_tuile(pos, tuile)
 
 
 def supprimer_niveau(nom: str):
-    if sauvegardes_dispo.get(nom,False) or not sauvegardes_dispo[nom].exists() :
+    if nom not in sauvegardes_dispo or not sauvegardes_dispo[nom].exists():
         return
     logging.info(f"Suppression du niveau '{nom}'")
     sauvegardes_dispo[nom].unlink()
     del sauvegardes_dispo[nom]
     
-
-

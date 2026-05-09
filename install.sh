@@ -5,6 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 cd "$SCRIPT_DIR"
 VENV_NAME=".env_saute_mouton"
 EXE_NAME="saute_mouton"
+SPEC_NAME="${EXE_NAME}.spec"
 
 echo Démarrage de la compilation dans le repertoire : $SCRIPT_DIR
 
@@ -22,9 +23,9 @@ if [ ! -d "$VENV_NAME" ]; then
     echo "Création de l'environnement virtuel $VENV_NAME..."
     python3 -m venv "$VENV_NAME"
 fi
-if [ -d PickTok.spec]; then
-    echo "Suppression du fichier PickTok.spec..."
-    rm PickTok.spec
+if [ -f "$SPEC_NAME" ]; then
+    echo "Suppression du fichier $SPEC_NAME..."
+    rm "$SPEC_NAME"
 fi
 
 
@@ -37,14 +38,14 @@ source "$VENV_NAME/bin/activate"
 pip install --upgrade pip
 
 
-pip install -r '/home/guy/Bureau/procjec2/req.txt'
+pip install -r "$SCRIPT_DIR/req.txt"
 
 
 
 pyinstaller --onefile --noconsole \
     --name "$EXE_NAME" \
-        app.py \
-    --add-data "asset:asset" \
+        main.py \
+    --add-data "fichier_jeux:fichier_jeux" \
     --hidden-import nava \
     --hidden-import tkinter\
     --hidden-import PIL.ImageTk \

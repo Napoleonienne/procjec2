@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 import operator
 
@@ -7,6 +9,7 @@ import logging
 import time
 import itertools
 import os
+from pathlib import Path
 import sys
 from typing import Optional, Callable, Tuple, overload
 from tkinter import Tk, Event as TkEvent
@@ -16,7 +19,7 @@ import place_holder
 
 
 
-def resource_path(relative_path)->str:
+def chemin_absolue(relative_path: str) -> str:
     """
     Obtient le chemin absolu vers une ressource pour la compilation avec PyInstaller. 
     ARGs:
@@ -25,19 +28,24 @@ def resource_path(relative_path)->str:
     """
     logging.debug(f"graphisme : Obtention du chemin absolu pour la ressource '{relative_path}'")
     try:
-        base_path = sys._MEIPASS # type: ignore
+        base_path = Path(sys._MEIPASS)  # type: ignore[attr-defined]
     except AttributeError:
-        base_path = os.path.abspath(".")
+        base_path = Path(__file__).resolve().parent
 
-    res:str =os.path.join(base_path, relative_path)
+    res = base_path / relative_path
 
-    try:
-        assert os.path.exists(res)
-    except AssertionError:
+    if not res.exists():
         logging.error(f"Le fichier suivant n'existe pas : {res}")
 
-    
-    return res
+    return str(res)
+
+
+def _normaliser_chemin(path: str | None) -> str | None:
+    if path is None:
+        return None
+    if os.path.isabs(path):
+        return path
+    return chemin_absolue(path)
     
 
 
@@ -47,18 +55,45 @@ Vec2 = vect.Vec2
 
 HAUTEUR =600
 LARGEUR =round(HAUTEUR*16/9)
+FENETRE_HAUTEUR = HAUTEUR
+FENETRE_LARGEUR = LARGEUR
+
+
+def definir_fenetre(largeur: int | None = None, hauteur: int | None = None) -> None:
+    global FENETRE_LARGEUR, FENETRE_HAUTEUR
+    if largeur is not None:
+        FENETRE_LARGEUR = largeur
+    if hauteur is not None:
+        FENETRE_HAUTEUR = hauteur
+
+
+def _echelle() -> tuple[float, float]:
+    return (FENETRE_LARGEUR / LARGEUR, FENETRE_HAUTEUR / HAUTEUR)
+
+
+def vers_pixels(vec: Vec2) -> Vec2:
+    return Vec2(vec.x * FENETRE_LARGEUR, vec.y * FENETRE_HAUTEUR)
+
+
+def vers_coordonnees(vec: Vec2) -> Vec2:
+    return Vec2(vec.x / FENETRE_LARGEUR, vec.y / FENETRE_HAUTEUR)
+
+
+def valeur_pixels(val: float) -> float:
+    return val * min(FENETRE_LARGEUR, FENETRE_HAUTEUR)
 
 
 
 
-def afficher(repere:bool = False):
+def ouvrir_fenetre(repere:bool = False, largeur: int | None = None, hauteur: int | None = None):
     """_summary_
 
     Args:
         repere (False): permmet ouvrir une fenetre
     """
     logging.info("ouverture de fenetre")
-    fltk.cree_fenetre(LARGEUR,HAUTEUR,affiche_repere=repere)
+    definir_fenetre(largeur=largeur, hauteur=hauteur)
+    fltk.cree_fenetre(FENETRE_LARGEUR,FENETRE_HAUTEUR,affiche_repere=repere)
 
 def fermer():
     """
@@ -79,7 +114,17 @@ def fleche(pos1:Vec2,pos2:Vec2):
     logging.info(f"graphisme : Affichage d'une flèche de {pos1} à {pos2}")
 
 
-    fltk.fleche(pos1.x,pos1.y,pos2.x,pos2.y,epaisseur=10,couleur="red")
+    pos1_pixels = vers_pixels(pos1)
+    pos2_pixels = vers_pixels(pos2)
+    epaisseur = max(1, round(valeur_pixels(0.01)))
+    fltk.fleche(
+        pos1_pixels.x,
+        pos1_pixels.y,
+        pos2_pixels.x,
+        pos2_pixels.y,
+        epaisseur=epaisseur,
+        couleur="red",
+    )
 
 
 def swapbuffer():
@@ -89,7 +134,11 @@ def swapbuffer():
     logging.info("graphisme : Echange du buffer pour afficher la nouvelle image")
     fltk.mise_a_jour()
 
-def shouldclose(ev:evenement):
+def effacer_tout() -> None:
+    """Efface tout le contenu actuellement affiché."""
+    fltk.efface_tout()
+
+def shouldclose(ev: evenement | None) -> bool:
     """_summary_
 
     Args:
@@ -98,8 +147,9 @@ def shouldclose(ev:evenement):
     Returns:
         _type_: _description_
     """
+    if ev is None:
+        return False
     logging.debug(f"graphisme : Vérification de l'événement pour la fermeture de la fenêtre : {ev.type}")
-
     return ev.type == "Quitte"
 def palier(vec:Vec2, taille_tuile:int)->Vec2:
     """fonction de snapping qui met une position dans la tuile apprprié
@@ -127,12 +177,25 @@ def palier(vec:Vec2, taille_tuile:int)->Vec2:
 
 
 def creer_texte(pos:Vec2,taile:float,texte:str)->int:
-    id = fltk.texte(pos.x,pos.y,texte,taille=taile)
+    pos_pixels = vers_pixels(pos)
+    taille_pixels = max(1, round(valeur_pixels(taile)))
+    id = fltk.texte(pos_pixels.x,pos_pixels.y,texte,taille=taille_pixels)
     return id
 
-def afficher_fond(path:str,tag):
-
-    fltk.image(LARGEUR/2,HAUTEUR/2,path,LARGEUR,HAUTEUR,tag=tag)
+def afficher_fond(path: str | None, tag):
+    chemin = _normaliser_chemin(path)
+    if chemin is None:
+        return
+    centre = vers_pixels(Vec2(0.5, 0.5))
+    taille = vers_pixels(Vec2(1.0, 1.0))
+    fltk.image(
+        round(centre.x),
+        round(centre.y),
+        chemin,
+        round(taille.x),
+        round(taille.y),
+        tag=tag,
+    )
 
 
 class Bouton:
@@ -148,7 +211,7 @@ class Bouton:
         action_clique: Callable[[], None],
         couleur: str = "blue",
         couleur_hover: str = "lightblue",
-        taille_texte: int = 20,
+        taille_texte: float = 0.03,
         tag: Optional[str] = None
     ) -> None:
         logging.info(f"graphisme : Création du bouton '{text}' à la position {pos} avec la dimension {dim}")
@@ -174,26 +237,31 @@ class Bouton:
     def coin_bas_droit(self) -> Vec2:
         return self.pos + self.dim / 2
 
-    def _calculer_pos_texte(self) -> Vec2:
+    def _calculer_pos_texte(self, taille_texte_pixels: float) -> Vec2:
         """Calcule la position pour centrer le texte."""
-        largeur_texte, _ = fltk.taille_texte(self.text, taille=self.taille_texte)
-        return self.pos - Vec2(largeur_texte / 2, self.taille_texte / 2)
+        largeur_texte, _ = fltk.taille_texte(self.text, taille=taille_texte_pixels)
+        centre_pixels = vers_pixels(self.pos)
+        return centre_pixels - Vec2(largeur_texte / 2, taille_texte_pixels / 2)
 
     def afficher(self) -> None:
         """Affiche le bouton et son texte."""
         logging.info(f"Affichage du bouton '{self.text}' à la position {self.pos} avec la dimension {self.dim}")
         self.suppr_affichage()  # Nettoie les anciens IDs
+        coin_haut_gauche_pixels = vers_pixels(self.coin_haut_gauche)
+        coin_bas_droit_pixels = vers_pixels(self.coin_bas_droit)
+        epaisseur = max(1, round(valeur_pixels(0.005)))
+        taille_texte_pixels = max(1, round(valeur_pixels(self.taille_texte)))
         self.id_rect = fltk.rectangle(
-            self.coin_haut_gauche.x, self.coin_haut_gauche.y,
-            self.coin_bas_droit.x, self.coin_bas_droit.y,
+            coin_haut_gauche_pixels.x, coin_haut_gauche_pixels.y,
+            coin_bas_droit_pixels.x, coin_bas_droit_pixels.y,
             self.couleur_hover if self.hover else self.couleur,
-            epaisseur=5,
+            epaisseur=epaisseur,
         )
-        pos_texte = self._calculer_pos_texte()
+        pos_texte = self._calculer_pos_texte(taille_texte_pixels)
         self.id_texte = fltk.texte(
             pos_texte.x, pos_texte.y,
             self.text,
-            taille=self.taille_texte,
+            taille=taille_texte_pixels,
         )
 
     def suppr_affichage(self) -> None:
@@ -212,9 +280,10 @@ class Bouton:
         x, y =  fltk.abscisse_souris(), fltk.ordonnee_souris()
         if x is None or y is None:
             return False
+        pos_pixels = vers_coordonnees(Vec2(x, y))
         hover = (
-            self.coin_haut_gauche.x < x < self.coin_bas_droit.x and
-            self.coin_haut_gauche.y < y < self.coin_bas_droit.y
+            self.coin_haut_gauche.x < pos_pixels.x < self.coin_bas_droit.x and
+            self.coin_haut_gauche.y < pos_pixels.y < self.coin_bas_droit.y
         )
         return hover
 
@@ -230,18 +299,21 @@ class Bouton:
         elif ev.type == "ClicGauche":
             x, y = fltk.abscisse(ev.data), fltk.ordonnee(ev.data) # type: ignore
             if (
-                x is not None and y is not None and
-                self.coin_haut_gauche.x < x < self.coin_bas_droit.x and
-                self.coin_haut_gauche.y < y < self.coin_bas_droit.y
+                x is not None and y is not None
             ):
-                self.action_clique()
+                pos_pixels = vers_coordonnees(Vec2(x, y))
+                if (
+                    self.coin_haut_gauche.x < pos_pixels.x < self.coin_bas_droit.x and
+                    self.coin_haut_gauche.y < pos_pixels.y < self.coin_bas_droit.y
+                ):
+                    self.action_clique()
 
         
 
 
 
 
-def afficher(object: place_holder.Object2d,tag:str=""):
+def afficher(object: place_holder.Object2d, tag: str = ""):
     """permet d'afficher un object2d
 
     Args:
@@ -249,7 +321,19 @@ def afficher(object: place_holder.Object2d,tag:str=""):
         tag (str): Tag pour l'objet
     """
     logging.info(f"graphisme : Affichage de l'objet à la position {object.pos} avec la texture '{object.texture}' et la taille {object.taille}")
-    fltk.image(object.pos.x, object.pos.y, object.texture, object.taille.x, object.taille.y, tag=tag)
+    pos_pixels = vers_pixels(object.pos)
+    taille_pixels = vers_pixels(object.taille)
+    texture = _normaliser_chemin(object.texture)
+    if texture is None:
+        return
+    fltk.image(
+        round(pos_pixels.x),
+        round(pos_pixels.y),
+        texture,
+        round(taille_pixels.x),
+        round(taille_pixels.y),
+        tag=tag,
+    )
 
 
 
@@ -260,7 +344,17 @@ class Grille:
         self.taille_tuile = taille_tuile
         self.tuiles = {}  # {(x, y): tuile}
 
-    def ajouter_tuile(self, pos: Vec2 = vect.Vec2(), tuile=None, texture: str = None, property: dict = {}):
+    def ajouter_tuile(
+        self,
+        pos: Vec2 | None = None,
+        tuile=None,
+        texture: str | None = None,
+        property: dict | None = None,
+    ):
+        if pos is None:
+            pos = vect.Vec2()
+        if property is None:
+            property = {}
         pos_snappée = palier(pos, self.taille_tuile)
 
         if tuile is not None:
@@ -326,14 +420,14 @@ def get_evenement():
 
 
 def test():
-    afficher(True)
+    ouvrir_fenetre(True)
     # Afficher une grille statique (pas besoin de recalculer à chaque frame)
     grille = Grille(32)
 
 
     grille.ajouter_tuile(Vec2(0, 0), )
     grille.afficher()
-    afficher_fond(None,"asset/vert.jpg")
+    afficher_fond("fichier_jeux/menus/image de fond.png", "fond")
 
 
     # Position fixe pour le sprite

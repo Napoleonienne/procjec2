@@ -12,8 +12,8 @@ class Menu:
         self.bouton:list[graphisme.Bouton]  = []
         self.fond:str = fond
         self.logo:Optional[str] = logo
-        self.pos_logo = Vec2(0.5 * graphisme.LARGEUR, 0.02 * graphisme.HAUTEUR)
-        self.dim_logo = Vec2(0.1 * graphisme.LARGEUR, 0.09 * graphisme.HAUTEUR)
+        self.pos_logo = Vec2(0.5, 0.12)
+        self.dim_logo = Vec2(0.1, 0.09)
 
 
 
@@ -28,6 +28,5 @@ class Menu:
             graphisme.afficher(j, tag=f"{self.name}")
         for bouton in self.bouton:
             bouton.afficher()
-
 
 

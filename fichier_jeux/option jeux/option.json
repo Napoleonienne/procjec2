@@ -1,12 +1,9 @@
-
 {
-
-"resolution":{
-    "hauteur":600,
-    "largeur": 800
-    }
-"VMAX" :15.0         , 
-"GRAVITE" :[0, 0.5],
-"PAS" :0.1  
-
+  "fenetre": {
+    "hauteur": 600,
+    "largeur": 1067
+  },
+  "VMAX": 15.0,
+  "GRAVITE": [0, 0.5],
+  "PAS": 0.1
 }

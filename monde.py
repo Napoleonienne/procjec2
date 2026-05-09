@@ -1,5 +1,5 @@
 import logging
-from typing import overload
+from typing import Any
 from graphisme import HAUTEUR, LARGEUR
 
 import graphisme
@@ -16,7 +16,10 @@ class joueur(Object2d):
     
     """
     def __init__(self,pos:vec2):
-        self.sprite:Sprite = Sprite(pos,graphisme.resource_path("asset/joueur/mouton.png"))
+        texture = graphisme.resource_path("fichier_jeux/joueur/mouton.png")
+        taille = vec2(0.06, 0.1)
+        super().__init__(pos, texture, taille)
+        self.sprite: Sprite = Sprite(pos, graphisme.chemin_absolue("fichier_jeux/joueur/mouton.png"))
         self.vitesse:vec2 =vec2()
         self.poids:float=12
 
@@ -27,10 +30,10 @@ class joueur(Object2d):
         return self.direction
     @property
     def position(self):
-        return self.sprite.pos
+        return self.pos
     @position.setter
     def position(self, value: vec2):
-        self.sprite.pos = value
+        self.pos = value
     
   
     
@@ -39,14 +42,14 @@ class joueur(Object2d):
 
     
     def afficher(self) -> None:
-        graphisme.afficher_sprite(self.sprite)
+        graphisme.afficher(self.sprite)
 
     @property
     def coin_haut_gauche(self) -> vec2:
-        return self.position - self.sprite.taille/2
+        return self.position - self.taille/2
     @property
     def coin_bas_droit(self) -> vec2:
-        return self.position + self.sprite.taille/2
+        return self.position + self.taille/2
     
 
     
@@ -63,13 +66,7 @@ class niveau:
 
     
     """
-    @overload
-    def __init__(self):
-        pass
-    
-
-
-    def __init__(self,debut:vec2,fin:vec2):
+    def __init__(self,debut:vec2 | None = None,fin:vec2 | None = None):
         """_summary_
 
         Args:
@@ -77,7 +74,7 @@ class niveau:
             fin (vec2): fin du niveau
         """
         logging.debug(f"creation du niveau")
-        self.debut:vec2 = debut
+        self.debut:vec2 = debut or vec2(0.06, 0.9)
         self.fond:str = ""      # Image de fond
         self.avant = graphisme.Grille(32)    #aux cas ou
         self.decor = graphisme.Grille(16)     # Tuiles décoratives (sans collision pas forcement a utiliser pour le decor mais sa peut etre plus simple pour la gestion de l'affichage)
@@ -85,28 +82,25 @@ class niveau:
         self.objet = graphisme.Grille(8)     # Tuiles détaillées sans but précis
         self.devant:list[Sprite] = []     #  encore a determiner a utilit peut ere pour des decor plus complexe
 
-        self.point_fin:vec2 = vec2(0,0) # Point d'arrivé du niveau
+        self.point_fin:vec2 = fin or vec2(0.94, 0.9) # Point d'arrivé du niveau
 
 
     
 
     def afficher_fond(self):
-        
-        fltk.image(0,0,self.fond,HAUTEUR,LARGEUR)
+        graphisme.afficher_fond(self.fond, tag="fond")
 
 
     def afficher_decor(self):
-        for tuile in self.decor:
-            graphisme.positionner_grille(tuile.textture,tuile.pos)
+        self.decor.afficher()
 
     def afficher_terrain(self):
-        for tuile in self.terrain:
-            graphisme.positionner_grille(tuile.textture,tuile.pos)
+        self.terrain.afficher()
     def afficher_devant(self):
         for other in self.devant:
-            graphisme.positionner_grille(other.textture,other.pos)
+            graphisme.afficher(other)
     
-    def serialisation(self) -> dict[str, any]:
+    def serialisation(self) -> dict[str, Any]:
         """
         serialise le niveau pour la sauvegarde en json
 
