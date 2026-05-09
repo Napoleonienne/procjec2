@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-import re
+import operator
 
 import fltk
 import vect
@@ -8,9 +8,12 @@ import time
 import itertools
 import os
 import sys
-from typing import Optional, Callable, Tuple
+from typing import Optional, Callable, Tuple, overload
 from tkinter import Tk, Event as TkEvent
 import place_holder
+
+
+
 
 
 def resource_path(relative_path)->str:
@@ -32,8 +35,7 @@ def resource_path(relative_path)->str:
         assert os.path.exists(res)
     except AssertionError:
         logging.error(f"Le fichier suivant n'existe pas : {res}")
-        res = os.path.join(base_path, "asset/missing.jpg") 
-        logging.warning(f"Utilisation du fichier de secours : {res}")
+
     
     return res
     
@@ -99,7 +101,7 @@ def swapbuffer():
     logging.info("graphisme : Echange du buffer pour afficher la nouvelle image")
     fltk.mise_a_jour()
 
-def shouldclose(ev:evenement):
+def shouldclose(ev:evenement|None):
     """_summary_
 
     Args:
@@ -296,9 +298,18 @@ class Grille:
     def __init__(self, taille_tuile: int):
         self.taille_tuile = taille_tuile
         self.tuiles = {}  # {(x, y): tuile}
-    def ajouter_tuile(self, pos: Vec2,tuile:place_holder.Tuile):
+
+    def ajouter_tuile(self, pos: Vec2 = vect.Vec2(), tuile=None, texture: str = None, property: dict = {}):
         pos_snappée = palier(pos, self.taille_tuile)
-        self.tuiles[(pos_snappée.x, pos_snappée.y)] = tuile
+
+        if tuile is not None:
+            self.tuiles[(tuile.pos.x, tuile.pos.y)] = tuile
+        elif texture is not None:
+            tuile = place_holder.Tuile(pos, texture, self.taille_tuile)
+            tuile.property.update(property)
+            self.tuiles[(pos_snappée.x, pos_snappée.y)] = tuile
+        else:
+            raise ValueError("Soit une tuile, soit une texture doit être fournie.")
     
     def get_tuile(self, pos: Vec2) -> Optional[place_holder.Tuile]:
         pos_snappée = palier(pos, self.taille_tuile)
@@ -357,7 +368,9 @@ def test():
     afficher(True)
     # Afficher une grille statique (pas besoin de recalculer à chaque frame)
     grille = Grille(32)
-    grille.ajouter_tuile(Vec2(0, 0), "asset/vert.jpg")
+
+
+    grille.ajouter_tuile(Vec2(0, 0), )
     grille.afficher()
     afficher_fond(None,"asset/vert.jpg")
 

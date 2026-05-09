@@ -1,29 +1,58 @@
 import logging
-
-from place_holder import Tuile
+import graphisme
+from place_holder import Sprite, Tuile,Object2d
 import vect
 import monde
 
-def collision(obj:Tuile, joueur: monde.joueur) -> bool:
-    """Vérifie si cette tuile entre en collision avec le joueur."""
-    return (
-        (obj.coin_haut_gauche.x <= joueur.coin_bas_droit.x and obj.coin_bas_droit.x >= joueur.coin_haut_gauche.x) and
-        (obj.coin_haut_gauche.y <= joueur.coin_bas_droit.y and obj.coin_bas_droit.y >= joueur.coin_haut_gauche.y) 
+
+
+def colision(obj1: Object2d,obj2:Object2d)->bool:
+    """
+    permet de tester les colision entre 2 object
+
+
+    Args:
+        obj1 (Object2d): le premier object
+        obj2 (Object2d): le deuxieme object
+
+    Returns:
+        bool: si sa touche ou pas
+    """
+
+    
+
+    obj1_hg = obj1.coin_haut_gauche
+    obj1_bd = obj1.coin_bas_droit
+
+    obj2_hg = obj2.coin_haut_gauche
+    obj2_bd = obj2.coin_bas_droit
+
+
+
+
+
+    return( obj2_bd.x > obj1_hg.x and
+            obj2_hg.x < obj1_bd.x and
+            obj2_bd.y > obj1_hg.y and
+            obj2_hg.y < obj1_bd.y
+         
     )
 
 
 
+
+
+
+
 def amorti(joueur: monde.joueur, tuile: Tuile) :
-        if joueur.direction.y > 0:  # En train de tomber
-            joueur.position.y = tuile.coin_haut_gauche.y - joueur.sprite.taille.y / 2
-            joueur.vitesse = 0
-        elif joueur.direction.y < 0:  # En train de sauter
-            joueur.position.y = tuile.coin_bas_droit.y + joueur.sprite.taille.y / 2
-            joueur.vitesse = 0
-        if joueur.direction.x > 0: 
-            joueur.position.x = tuile.coin_haut_gauche.x - joueur.sprite.taille.x / 2
-        elif joueur.direction.x < 0:   
-            joueur.position.x = tuile.coin_bas_droit.x + joueur.sprite.taille.x / 2
+    """
+    regle les colision si amortie
+
+    Args:
+        joueur (monde.joueur): _description_
+        tuile (Tuile): _description_
+    """
+    
 
 
 def terrain_glissant():
@@ -39,10 +68,11 @@ def appliquer_physique(joueur: monde.joueur, dt: float,monde:monde.niveau):
         dt (float): _description_
         monde (monde.niveau): niveau actuel
     """
+    
 
     logging.info(f"applique la physique par rapport aux taux")
     for tuile in monde.terrain:
-            if collision(tuile, joueur):
+            if colision(tuile, joueur):
                 if tuile.property["amortissante"]:  
                     amorti(joueur, tuile)
                 elif tuile.property["mortelle"]:
@@ -51,4 +81,7 @@ def appliquer_physique(joueur: monde.joueur, dt: float,monde:monde.niveau):
                     joueur.vitesse = 0
                     joueur.direction = vect.Vec2()
                 elif tuile.property[""]:
+                     pass
+                
+    return vect.Vec2
 

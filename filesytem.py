@@ -1,9 +1,6 @@
 import logging
-from operator import le
-from os import path
 from pathlib import Path
 import json
-from turtle import st
 from typing import Optional
 from vect import Vec2
 from monde import niveau

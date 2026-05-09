@@ -1,9 +1,7 @@
-from calendar import c
-import itertools
 import logging
 import time
+from typing import Optional
 import vect
-import fltk
 import graphisme
 from menus import Menu
 import filesytem
@@ -23,12 +21,16 @@ logging.basicConfig(
 
 
 class app:
-    jeu_pre = True # juste si il etait en jeux ou pas
-    etat = "menu"
-    #etats_possibles = ["menu","jeu","pause","gameover", "editeur_niveau"]  a titre indicative
-    dt =0
-    lastframe =0
-    level_actuel:monde.niveau  = monde.niveau()
+  
+    def __init__(self):
+        self.jeu_pre = True
+        self.etat = "menu"
+        self.dt = 0
+        self.lastframe = 0
+        self.level_actuel = monde.niveau()
+        self.joueur_actuel = None  
+
+    
     def run(self):
         graphisme.afficher()
         filesytem.peupler_sauvegardes()
@@ -67,7 +69,7 @@ class app:
 
             def sauvegarde():
                 logging.info(f"chagement du niveau {key} ui se trouve {path}")
-                app.level_actuel =  filesytem.charger_niveau(key)
+                self.level_actuel =  filesytem.charger_niveau(key)
             menusaugarde.ajouter_bouton(vec2(graphisme.LARGEUR/2,i),vec2(80,30),sauvegarde,f"sauvegarde : {key}")
 
     
@@ -76,49 +78,30 @@ class app:
 
         menusaugarde.afficher()
 
-
-
-
-    
-
-
     def mainloop(self):
         logging.info("Démarrage de la boucle principale.")
-        evenement =graphisme.get_evenement()
+        evenement:graphisme.evenement | None = None
+       
         while not graphisme.shouldclose(evenement):
-            evenement =graphisme.get_evenement()
-
+            evenement = graphisme.get_evenement()
+        
             firstframe = time.time_ns()
-          
 
-            match app.etat:
+            match self.etat:
                 case "menu":
                     self.menu_principal()
                 case "jeu":
-                    
-
-                    monde.joueur(self.level_actuel.debut)
+                    if self.joueur_actuel:
+                        self.joueur_actuel.afficher()
+                        # physique, inputs, etc.
                 case "pause":
-                    pass
-                case "gameover":
-                    pass
-                case "editeur_niveau":
-                    pass
+                    self.menu_pause()
                 case "menus_sauvegarde":
-                    pass
-
+                    self.menus_sauvegarde()
                 case _:
-                    logging.warning(f"État inconnu : {app.etat}")
-                    raise ValueError(f"État inconnu : {app.etat}")
+                    logging.warning(f"État inconnu : {self.etat}")
+                    raise ValueError(f"État inconnu : {self.etat}")
 
-
-
-
-
-            
             graphisme.swapbuffer()
-            dt = app.lastframe -firstframe
-            lastframe = firstframe
-            pass
-        return None
-
+            self.dt = firstframe - self.lastframe
+            self.lastframe = firstframe
