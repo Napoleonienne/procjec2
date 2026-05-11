@@ -60,6 +60,14 @@ FENETRE_LARGEUR = LARGEUR
 
 
 def definir_fenetre(largeur: int | None = None, hauteur: int | None = None) -> None:
+    """
+    definir les dimmesion de la fenetre 
+    si elle sont changer
+
+    Args:
+        largeur (int | None, optional): largeur de la fenetre
+        hauteur (int | None, optional): hauteur de la fenetre
+    """
     global FENETRE_LARGEUR, FENETRE_HAUTEUR
     if largeur is not None:
         FENETRE_LARGEUR = largeur
@@ -76,10 +84,22 @@ def vers_pixels(vec: Vec2) -> Vec2:
 
 
 def vers_coordonnees(vec: Vec2) -> Vec2:
+
     return Vec2(vec.x / FENETRE_LARGEUR, vec.y / FENETRE_HAUTEUR)
 
 
 def valeur_pixels(val: float) -> float:
+    """
+    prend le pourrcentage et le met a echelle de la fenetre
+
+
+    
+    Args:
+        val (float): une valeur entre 0 et 1
+
+    Returns:
+        float: _description_
+    """
     return val * min(FENETRE_LARGEUR, FENETRE_HAUTEUR)
 
 
@@ -103,28 +123,42 @@ def fermer():
     fltk.ferme_fenetre()
 
 
-def fleche(pos1:Vec2,pos2:Vec2):
+def fleche(pos1:Vec2,pos2:Vec2,epaisseur:float = 0.01,tag:str ="fleche joueur"):
     """
     permet afficher une fleche entre deux point
 
     Args:
         pos1 (Vec2): position de depart
         pos2 (Vec2): position d'arriver
+
     """
     logging.info(f"graphisme : Affichage d'une flèche de {pos1} à {pos2}")
 
 
     pos1_pixels = vers_pixels(pos1)
     pos2_pixels = vers_pixels(pos2)
-    epaisseur = max(1, round(valeur_pixels(0.01)))
-    fltk.fleche(
+    epaisseur = max(1, round(valeur_pixels(epaisseur)))
+    id = fltk.fleche(
         pos1_pixels.x,
         pos1_pixels.y,
         pos2_pixels.x,
         pos2_pixels.y,
         epaisseur=epaisseur,
         couleur="red",
+        tag=tag
     )
+
+def suprimer_el_tag(tag:str):
+    """
+    permet de suprimer tout les element d'un tag
+
+    Args:
+        tag (str): le tag a suprimer
+    """
+    logging.info(f"graphisme : Suppression de tous les éléments avec le tag '{tag}'")
+    fltk.efface(tag)
+
+
 
 
 def swapbuffer():
@@ -151,6 +185,7 @@ def shouldclose(ev: evenement | None) -> bool:
         return False
     logging.debug(f"graphisme : Vérification de l'événement pour la fermeture de la fenêtre : {ev.type}")
     return ev.type == "Quitte"
+
 def palier(vec:Vec2, taille_tuile:int)->Vec2:
     """fonction de snapping qui met une position dans la tuile apprprié
 
@@ -256,13 +291,16 @@ class Bouton:
             coin_bas_droit_pixels.x, coin_bas_droit_pixels.y,
             self.couleur_hover if self.hover else self.couleur,
             epaisseur=epaisseur,
+            tag=self.tag
         )
         pos_texte = self._calculer_pos_texte(taille_texte_pixels)
         self.id_texte = fltk.texte(
             pos_texte.x, pos_texte.y,
             self.text,
             taille=taille_texte_pixels,
+            tag=self.tag
         )
+
 
     def suppr_affichage(self) -> None:
         """Efface le bouton de l'écran."""
@@ -271,6 +309,8 @@ class Bouton:
             fltk.efface(self.id_rect)
         if self.id_texte:
             fltk.efface(self.id_texte)
+
+        self.actif = False
         self.id_rect = None
         self.id_texte = None
 
@@ -292,10 +332,7 @@ class Bouton:
         logging.info(f"graphisme : Gestion de l'événement sur le bouton '{self.text}'")
         if not self.actif:
             return
-  
-  
-
-        
+    
         elif ev.type == "ClicGauche":
             x, y = fltk.abscisse(ev.data), fltk.ordonnee(ev.data) # type: ignore
             if (
@@ -340,21 +377,27 @@ def afficher(object: place_holder.Object2d, tag: str = ""):
     
 
 class Grille:
-    def __init__(self, taille_tuile: int):
+    def __init__(self, taille_tuile: int, tag: str):
         self.taille_tuile = taille_tuile
-        self.tuiles = {}  # {(x, y): tuile}
+        self.tuiles:dict[tuple[int, int], place_holder.Tuile] = {}  # {(x, y): tuile}
+        self.tag = tag
 
     def ajouter_tuile(
         self,
-        pos: Vec2 | None = None,
+        pos: Vec2 = vect.Vec2(),
         tuile=None,
         texture: str | None = None,
-        property: dict | None = None,
+        property: dict  = {},
     ):
-        if pos is None:
-            pos = vect.Vec2()
-        if property is None:
-            property = {}
+        
+        """
+
+
+
+        Raises:
+            ValueError: _description_
+        """
+
         pos_snappée = palier(pos, self.taille_tuile)
 
         if tuile is not None:
@@ -383,7 +426,9 @@ class Grille:
             afficher(tuile)
     def effacer(self):
         for tuile in self.tuiles.values():
-            effacer_tuile(tuile)
+            tuile.effacer()
+            
+           
 
     def serialisation(self) -> dict[tuple[float, float], dict]:
         """Convertit la grille en une liste de dictionnaires pour la sérialisation dans le json."""
@@ -425,8 +470,8 @@ def test():
     grille = Grille(32)
 
 
-    grille.ajouter_tuile(Vec2(0, 0), )
     grille.afficher()
+
     afficher_fond("fichier_jeux/menus/image de fond.png", "fond")
 
 

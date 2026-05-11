@@ -46,16 +46,32 @@ class app:
     def menu_principal(self):
         menuprincipal: Menu = Menu(
             "menu principal",
-            "fichier_jeux/menus/image de fond.png",
+            "fichier_jeux/menus/image de fond.jpg",
             "fichier_jeux/menus/logo.png",
         )
+
         menuprincipal.ajouter_bouton(vec2(0.5, 0.43), vec2(0.2, 0.1), self.lancer_jeu, "jouer")
         menuprincipal.ajouter_bouton(vec2(0.5, 0.57), vec2(0.2, 0.1), self.ouvrir_sauvegardes_depuis_menu, "sauvegardes")
+        menuprincipal.ajouter_bouton(vec2(0.5, 0.85), vec2(0.2, 0.1), self.ouvrir_editeur_niveau, "editeur de niveau")
         menuprincipal.ajouter_bouton(vec2(0.5, 0.7), vec2(0.2, 0.1), self.fermer_jeu, "quitter")
-        return menuprincipal
+
+
+
+
+
+
+    def changer_etat(self, nouvel_etat: str):
+        logging.info(f"Changement d'état : {self.etat} -> {nouvel_etat}")
+        
+        self.etat = nouvel_etat
+
+    def ouvrir_editeur_niveau(self):
+
+        logging.info("Ouverture de l'éditeur de niveau")
+        
     
     def menu_pause(self):
-        menuPause: Menu = Menu("menu pause", "fichier_jeux/menus/image de fond.png")
+        menuPause: Menu = Menu("menu pause", "fichier_jeux/menus/image de fond.jpg")
         menuPause.ajouter_bouton(vec2(0.5, 0.5), vec2(0.2, 0.1), self.reprendre_jeu, "reprendre")
         return menuPause
 
@@ -143,6 +159,10 @@ class app:
                     menu.afficher()
                     for bouton in menu.bouton:
                         bouton.action(evenement)
+                case "editeur_niveau":
+                    self.ouvrir_editeur_niveau()
+
+                    pass
                 case _:
                     logging.warning(f"État inconnu : {self.etat}")
                     raise ValueError(f"État inconnu : {self.etat}")

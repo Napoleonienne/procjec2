@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import graphisme
 import vect
 vec2 = vect.Vec2
 
@@ -12,9 +13,8 @@ class Object2d:
         Args:
             pos (vec2): Position centrale de l'objet.
             texture (str): Chemin vers la texture.
-            taille (vec2 | int): Taille de l'objet.
-                - Si `int` : carré de côté `taille`.
-                - Si `vec2` : rectangle de dimensions (x, y).
+            taille (vec2 | int): Taille de l'objet.     
+               
         """
         self.id: int | None = None
         self._texture: str = texture
@@ -83,11 +83,7 @@ class Sprite(Object2d):
         super().__init__(pos, texture, taille, tag)
         # Propriétés spécifiques aux sprites (si besoin)
         self.property.update({
-            "solide": False,
-            "rebondissante": False,
-            "glissante": False,
-            "amortissante": False,
-            "mortelle": False,    
+
         })
 
 class Tuile(Object2d):
@@ -97,11 +93,20 @@ class Tuile(Object2d):
         Args:
             taille (int): Taille du côté de la tuile (carrée).
         """
-        super().__init__(pos, texture, taille)
+        super().__init__(pos, texture, taille, tag)
         # Propriétés spécifiques aux tuiles
         self.property.update({
-            "mortelle": False,
-        })
+            "solide": False,
+            "rebondissante": False,
+            "glissante": False,
+            "amortissante": False,
+            "mortelle": False,    
+        }
+        )
+    
+
+
+
 
 
 

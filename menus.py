@@ -18,7 +18,7 @@ class Menu:
 
 
     def ajouter_bouton(self,pos:Vec2,dim:Vec2,action:Callable,texte:str):
-        self.bouton.append(graphisme.Bouton(pos,dim,texte,action,))
+        self.bouton.append(graphisme.Bouton(pos,dim,texte,action,tag=self.name))
 
     def afficher(self):
         if self.fond:

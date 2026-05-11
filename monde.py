@@ -76,10 +76,10 @@ class niveau:
         logging.debug(f"creation du niveau")
         self.debut:vec2 = debut or vec2(0.06, 0.9)
         self.fond:str = ""      # Image de fond
-        self.avant = graphisme.Grille(32)    #aux cas ou
-        self.decor = graphisme.Grille(16)     # Tuiles décoratives (sans collision pas forcement a utiliser pour le decor mais sa peut etre plus simple pour la gestion de l'affichage)
-        self.terrain = graphisme.Grille(16)   # Tuiles solides (avec collision a utiliser pour le terrain)
-        self.objet = graphisme.Grille(8)     # Tuiles détaillées sans but précis
+        self.avant = graphisme.Grille(32,"avant")    #aux cas ou
+        self.decor = graphisme.Grille(16,"decor")     # Tuiles décoratives (sans collision pas forcement a utiliser pour le decor mais sa peut etre plus simple pour la gestion de l'affichage)
+        self.terrain = graphisme.Grille(16,"terrain")   # Tuiles solides (avec collision a utiliser pour le terrain)
+        self.objet = graphisme.Grille(8,"objet")     # Tuiles détaillées sans but précis
         self.devant:list[Sprite] = []     #  encore a determiner a utilit peut ere pour des decor plus complexe
 
         self.point_fin:vec2 = fin or vec2(0.94, 0.9) # Point d'arrivé du niveau
@@ -131,6 +131,17 @@ class niveau:
         }
 
 
+def air(pos: vec2) -> Tuile:
+    """Renvoie une tuile d'air (non solide).
+    a voir
+    
+    
+    
+    """
+    tu =Tuile(pos, texture="", taille=32, tag="air")
+    tu.property["solide"] = False
 
+
+    return tu
 
         
