@@ -2,9 +2,9 @@
 
 #include "place_holder.hpp"
 #include "vect.hpp"
-
-#include <SDL.h>
-#include <SDL_image.h>
+#include <
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #include <filesystem>
 #include <string>

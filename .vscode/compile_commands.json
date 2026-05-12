@@ -1,0 +1,31 @@
+[
+{
+  "directory": "/home/guy/Bureau/procjec2",
+  "arguments": ["/usr/bin/g++", "-c", "-m64", "-std=c++23", "-Isrc", "-DSDL_MAIN_HANDLED", "-o", "build/.objs/saute_mouton/linux/x86_64/src/menus.cpp.o", "src/menus.cpp"],
+  "file": "src/menus.cpp"
+},
+{
+  "directory": "/home/guy/Bureau/procjec2",
+  "arguments": ["/usr/bin/g++", "-c", "-m64", "-std=c++23", "-Isrc", "-DSDL_MAIN_HANDLED", "-o", "build/.objs/saute_mouton/linux/x86_64/src/graphisme.cpp.o", "src/graphisme.cpp"],
+  "file": "src/graphisme.cpp"
+},
+{
+  "directory": "/home/guy/Bureau/procjec2",
+  "arguments": ["/usr/bin/g++", "-c", "-m64", "-std=c++23", "-Isrc", "-DSDL_MAIN_HANDLED", "-o", "build/.objs/saute_mouton/linux/x86_64/src/app.cpp.o", "src/app.cpp"],
+  "file": "src/app.cpp"
+},
+{
+  "directory": "/home/guy/Bureau/procjec2",
+  "arguments": ["/usr/bin/g++", "-c", "-m64", "-std=c++23", "-Isrc", "-DSDL_MAIN_HANDLED", "-o", "build/.objs/saute_mouton/linux/x86_64/src/main.cpp.o", "src/main.cpp"],
+  "file": "src/main.cpp"
+},
+{
+  "directory": "/home/guy/Bureau/procjec2",
+  "arguments": ["/usr/bin/g++", "-c", "-m64", "-std=c++23", "-Isrc", "-DSDL_MAIN_HANDLED", "-o", "build/.objs/saute_mouton/linux/x86_64/src/filesystem.cpp.o", "src/filesystem.cpp"],
+  "file": "src/filesystem.cpp"
+},
+{
+  "directory": "/home/guy/Bureau/procjec2",
+  "arguments": ["/usr/bin/g++", "-c", "-m64", "-std=c++23", "-Isrc", "-DSDL_MAIN_HANDLED", "-o", "build/.objs/saute_mouton/linux/x86_64/src/monde.cpp.o", "src/monde.cpp"],
+  "file": "src/monde.cpp"
+}]
