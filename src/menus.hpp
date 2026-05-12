@@ -41,7 +41,7 @@ public:
 
 private:
     std::string name_{};
-    std::vector<Bouton> bouton_{};
+    std::vector<Bouton> boutons_{};
     std::string fond_{};
     std::optional<std::string> logo_{};
     Vec2 pos_logo_{0.5f, 0.12f};

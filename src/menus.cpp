@@ -38,7 +38,7 @@ Menu::Menu(std::string name, std::string fond, std::optional<std::string> logo)
     : name_(std::move(name)), fond_(std::move(fond)), logo_(std::move(logo)) {}
 
 void Menu::ajouter_bouton(Vec2 pos, Vec2 dim, std::function<void()> action, const std::string& texte) {
-    bouton_.emplace_back(pos, dim, texte, std::move(action));
+    boutons_.emplace_back(pos, dim, texte, std::move(action));
 }
 
 void Menu::afficher(Graphisme& graphisme) {
@@ -51,23 +51,23 @@ void Menu::afficher(Graphisme& graphisme) {
         graphisme.afficher_sprite(logo_sprite);
     }
 
-    for (auto& bouton : bouton_) {
+    for (auto& bouton : boutons_) {
         bouton.afficher(graphisme);
     }
 }
 
 void Menu::gerer_evenement(const SDL_Event& ev, const Graphisme& graphisme) {
-    for (auto& bouton : bouton_) {
+    for (auto& bouton : boutons_) {
         bouton.gerer_evenement(ev, graphisme);
     }
 }
 
 void Menu::mettre_a_jour_hover(const Graphisme& graphisme) {
-    for (auto& bouton : bouton_) {
+    for (auto& bouton : boutons_) {
         bouton.mettre_a_jour_hover(graphisme);
     }
 }
 
 void Menu::vider() {
-    bouton_.clear();
+    boutons_.clear();
 }
