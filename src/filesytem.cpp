@@ -22,7 +22,7 @@ Options charger_options() {
 
     std::ifstream fichier(options_path);
     if (!fichier.is_open()) {
-        SDL_Log("filesytem : impossible d'ouvrir %s", options_path.string().c_str());
+        SDL_Log("filesystem : impossible d'ouvrir %s", options_path.string().c_str());
         return options;
     }
 
@@ -35,7 +35,7 @@ Options charger_options() {
             options.hauteur = fenetre.value("hauteur", options.hauteur);
         }
     } catch (const json::exception& exc) {
-        SDL_Log("filesytem : erreur JSON %s", exc.what());
+        SDL_Log("filesystem : erreur JSON %s", exc.what());
     }
 
     return options;
@@ -108,7 +108,7 @@ Niveau charger_niveau(const std::filesystem::path& chemin) {
 
     std::ifstream fichier(chemin);
     if (!fichier.is_open()) {
-        SDL_Log("filesytem : impossible de lire %s", chemin.string().c_str());
+        SDL_Log("filesystem : impossible de lire %s", chemin.string().c_str());
         return niveau_charger;
     }
 
@@ -116,7 +116,7 @@ Niveau charger_niveau(const std::filesystem::path& chemin) {
     try {
         fichier >> data;
     } catch (const json::exception& exc) {
-        SDL_Log("filesytem : erreur JSON %s", exc.what());
+        SDL_Log("filesystem : erreur JSON %s", exc.what());
         return niveau_charger;
     }
 

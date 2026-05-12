@@ -31,7 +31,7 @@ void Bouton::mettre_a_jour_hover(const Graphisme& graphisme) {
 
 bool Bouton::contient_point(int x, int y, const Graphisme& graphisme) const {
     const SDL_FRect rect = graphisme.rect_pixels(pos_, dim_);
-    return x >= rect.x && x <= rect.x + rect.w && y >= rect.y && y <= rect.y + rect.h;
+    return x >= rect.x && x < rect.x + rect.w && y >= rect.y && y < rect.y + rect.h;
 }
 
 Menu::Menu(std::string name, std::string fond, std::optional<std::string> logo)

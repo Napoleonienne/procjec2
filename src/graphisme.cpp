@@ -20,7 +20,8 @@ std::filesystem::path chemin_absolue(std::string_view relative_path) {
     return relative;
 }
 
-bool Graphisme::ouvrir_fenetre(bool, int largeur, int hauteur) {
+bool Graphisme::ouvrir_fenetre(bool repere, int largeur, int hauteur) {
+    (void)repere;
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         SDL_Log("graphisme : SDL_Init a échoué : %s", SDL_GetError());
         return false;

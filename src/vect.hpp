@@ -4,6 +4,8 @@
 #include <numbers>
 #include <string>
 
+constexpr float kEpsilon = 1e-6f;
+
 struct Vec2 {
     float x{0.0f};
     float y{0.0f};
@@ -24,7 +26,7 @@ struct Vec2 {
     }
 
     constexpr Vec2 operator/(float other) const {
-        return other == 0.0f ? Vec2{} : Vec2{x / other, y / other};
+        return std::abs(other) < kEpsilon ? Vec2{} : Vec2{x / other, y / other};
     }
 };
 
@@ -38,7 +40,7 @@ inline float norme(const Vec2& vec) {
 
 inline Vec2 normalize(const Vec2& vec) {
     const float n = norme(vec);
-    return n == 0.0f ? Vec2{} : vec / n;
+    return std::abs(n) < kEpsilon ? Vec2{} : vec / n;
 }
 
 inline float dot(const Vec2& vec_a, const Vec2& vec_b) {
