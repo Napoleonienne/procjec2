@@ -79,8 +79,8 @@ class niveau:
         self.avant = graphisme.Grille(32,"avant")    #aux cas ou
         self.decor = graphisme.Grille(16,"decor")     # Tuiles décoratives (sans collision pas forcement a utiliser pour le decor mais sa peut etre plus simple pour la gestion de l'affichage)
         self.terrain = graphisme.Grille(16,"terrain")   # Tuiles solides (avec collision a utiliser pour le terrain)
-        self.objet = graphisme.Grille(8,"objet")     # Tuiles détaillées sans but précis
-        self.devant:list[Sprite] = []     #  encore a determiner a utilit peut ere pour des decor plus complexe
+        self.devant = graphisme.Grille(8,"devant")     # Tuiles détaillées sans but précis
+        self.plan_object:list[Sprite] = []     #  encore a determiner a utilit peut ere pour des decor plus complexe
 
         self.point_fin:vec2 = fin or vec2(0.94, 0.9) # Point d'arrivé du niveau
 
@@ -97,7 +97,7 @@ class niveau:
     def afficher_terrain(self):
         self.terrain.afficher()
     def afficher_devant(self):
-        for other in self.devant:
+        for other in self.plan_object:
             graphisme.afficher(other)
     
     def serialisation(self) -> dict[str, Any]:
@@ -126,8 +126,8 @@ class niveau:
             "avant": self.avant.serialisation(),
             "decor": self.decor.serialisation(),
             "terrain": self.terrain.serialisation(),
-            "objet": self.objet.serialisation(),
-            "devant": [sprite.serialisation() for sprite in self.devant],
+            "objet": self.devant.serialisation(),
+            "devant": [sprite.serialisation() for sprite in self.plan_object],
         }
 
 

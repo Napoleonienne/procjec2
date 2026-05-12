@@ -71,17 +71,24 @@ def appliquer_physique(joueur: monde.joueur, dt: float,monde:monde.niveau):
     
 
     logging.info(f"applique la physique par rapport aux taux")
-    for tuile in monde.terrain:
-            if colision(tuile, joueur):
-                if tuile.property["amortissante"]:  
-                    amorti(joueur, tuile)
-                elif tuile.property["mortelle"]:
-                    # Réinitialiser la position du joueur ou appliquer une pénalité
-                    joueur.position = monde.debut # Exemple de réinitialisation
-                    joueur.vitesse = 0
-                    joueur.direction = vect.Vec2()
-                elif tuile.property[""]:
-                     pass
+
+    if joueur.vitesse != 0:
+    g_a = monde.avant
+    terain = monde.terrain
+    g_d= monde.devant
+    l_spr =monde.plan_object
+
+
+    g_a.get_tuile(joueur.position)
+    terain.get_tuile(joueur.position)
+    g_d.get_tuile(joueur.position)
+
+    
+
+    for sprite in l_spr:
+        if colision(joueur, sprite):
+            pass
+       
                 
     return vect.Vec2
 

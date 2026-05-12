@@ -93,7 +93,7 @@ def charger_niveau(nom: str)-> niveau:
     niveau_charger.avant = Grille(32)
     niveau_charger.decor = Grille(16)
     niveau_charger.terrain = Grille(16)
-    niveau_charger.objet = Grille(8)  
+    niveau_charger.devant = Grille(8)  
 
     peupler_niveau(donne_niveau, niveau_charger, "avant")
     peupler_niveau(donne_niveau, niveau_charger, "decor")
@@ -107,7 +107,7 @@ def charger_niveau(nom: str)-> niveau:
         taille = Vec2(sprite_data["taille"]["x"], sprite_data["taille"]["y"])
         texture = sprite_data["texture"]
         sprite = Sprite(pos, texture, taille)
-        niveau_charger.devant.append(sprite)
+        niveau_charger.plan_object.append(sprite)
 
 
     return niveau_charger

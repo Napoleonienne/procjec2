@@ -128,7 +128,7 @@ class app:
         self.level_actuel.avant.afficher()
         self.level_actuel.afficher_decor()
         self.level_actuel.afficher_terrain()
-        self.level_actuel.objet.afficher()
+        self.level_actuel.devant.afficher()
         self.level_actuel.afficher_devant()
         if self.joueur_actuel:
             self.joueur_actuel.afficher()
