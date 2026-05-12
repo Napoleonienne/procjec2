@@ -76,6 +76,10 @@ static void charger_grille(const json& donne_niveau, const std::string& tranche,
             continue;
         }
 
+        if (!tuile_data.contains("pos") || !tuile_data.at("pos").is_object()) {
+            continue;
+        }
+
         const auto& pos_data = tuile_data.at("pos");
         Vec2 pos{pos_data.value("x", 0.0f), pos_data.value("y", 0.0f)};
 
@@ -142,6 +146,10 @@ Niveau charger_niveau(const std::filesystem::path& chemin) {
             if (!sprite_data.is_object()) {
                 continue;
             }
+            if (!sprite_data.contains("pos") || !sprite_data.contains("taille")) {
+                continue;
+            }
+
             const auto& pos_data = sprite_data.at("pos");
             const auto& taille_data = sprite_data.at("taille");
             Vec2 pos{pos_data.value("x", 0.0f), pos_data.value("y", 0.0f)};

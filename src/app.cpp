@@ -95,7 +95,7 @@ void App::reconstruire_menu_sauvegarde() {
     menu_sauvegarde_ = Menu{"menus sauvegarde", "fichier_jeux/menus/image de fond.png"};
     float y = 0.2f;
     for (const auto& [nom, chemin] : sauvegardes_) {
-        menu_sauvegarde_.ajouter_bouton(Vec2{0.5f, y}, Vec2{0.08f, 0.05f}, [this, nom]() { charger_sauvegarde(nom); }, "sauvegarde");
+        menu_sauvegarde_.ajouter_bouton(Vec2{0.5f, y}, Vec2{0.08f, 0.05f}, [this, nom]() { charger_sauvegarde(nom); }, nom);
         y += 0.08f;
     }
 
