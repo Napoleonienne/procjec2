@@ -38,19 +38,17 @@ source "$VENV_NAME/bin/activate"
 pip install --upgrade pip
 
 
-pip install -r "$SCRIPT_DIR/req.txt"
-
+pip install -r "$SCRIPT_DIR/requirement.txt"
 
 
 pyinstaller --onefile --noconsole \
-    --name "$EXE_NAME" \
-        main.py \
-    --add-data "fichier_jeux:fichier_jeux" \
-    --hidden-import nava \
-    --hidden-import tkinter\
-    --hidden-import PIL.ImageTk \
-    --hidden-import PIL._tkinter_finder \
-    --icon=icone.ico
+  --name saute_mouton \
+    main.py \
+  --add-data "fichier_jeux:fichier_jeux" \
+  --hidden-import nava \
+  --hidden-import tkinter \
+  --hidden-import PIL.ImageTk \
+  --hidden-import PIL._tkinter_finder
 
 echo "Désactivation de l'environnement virtuel..."
 deactivate

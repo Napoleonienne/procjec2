@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from email.policy import default
+import multiprocessing.pool
 import operator
 
 import fltk
@@ -14,9 +16,20 @@ import sys
 from typing import Optional, Callable, Tuple, overload
 from tkinter import Tk, Event as TkEvent
 import place_holder
+import multiprocessing
 
 
+def process(f,*kwarg):
+    """permet d'executer une fonction dans un processus a part pour pas faire freeze la fenetre
 
+    Args:
+        f (function): la fonction a executer
+        *kwarg: les argument de la fonction
+    """
+    logging.info(f"graphisme : Lancement de la fonction '{f.__name__}' dans un processus séparé avec les arguments {kwarg}")
+    pool = multiprocessing.Pool(processes=1)
+    pool.apply_async(f, kwarg)
+    pool.close()
 
 
 def chemin_absolue(relative_path: str) -> str:
@@ -59,6 +72,7 @@ FENETRE_HAUTEUR = HAUTEUR
 FENETRE_LARGEUR = LARGEUR
 
 
+
 def definir_fenetre(largeur: int | None = None, hauteur: int | None = None) -> None:
     """
     definir les dimmesion de la fenetre 
@@ -73,6 +87,7 @@ def definir_fenetre(largeur: int | None = None, hauteur: int | None = None) -> N
         FENETRE_LARGEUR = largeur
     if hauteur is not None:
         FENETRE_HAUTEUR = hauteur
+
 
 
 def _echelle() -> tuple[float, float]:
@@ -91,9 +106,7 @@ def vers_coordonnees(vec: Vec2) -> Vec2:
 def valeur_pixels(val: float) -> float:
     """
     prend le pourrcentage et le met a echelle de la fenetre
-
-
-    
+ 
     Args:
         val (float): une valeur entre 0 et 1
 
@@ -148,12 +161,12 @@ def fleche(pos1:Vec2,pos2:Vec2,epaisseur:float = 0.01,tag:str ="fleche joueur"):
         tag=tag
     )
 
-def suprimer_el_tag(tag:str):
+def supprimer_el(tag:str|int):
     """
     permet de suprimer tout les element d'un tag
 
     Args:
-        tag (str): le tag a suprimer
+        tag (str): le tag ou id a suprimer
     """
     logging.info(f"graphisme : Suppression de tous les éléments avec le tag '{tag}'")
     fltk.efface(tag)
@@ -274,7 +287,8 @@ class Bouton:
 
     def _calculer_pos_texte(self, taille_texte_pixels: float) -> Vec2:
         """Calcule la position pour centrer le texte."""
-        largeur_texte, _ = fltk.taille_texte(self.text, taille=taille_texte_pixels)
+        
+        largeur_texte, _ = fltk.taille_texte(self.text, taille=taille_texte_pixels) # type: ignore
         centre_pixels = vers_pixels(self.pos)
         return centre_pixels - Vec2(largeur_texte / 2, taille_texte_pixels / 2)
 
@@ -405,13 +419,14 @@ class Grille:
         elif texture is not None:
             tuile = place_holder.Tuile(pos, texture, self.taille_tuile)
             tuile.property.update(property)
-            self.tuiles[(pos_snappée.x, pos_snappée.y)] = tuile
+            self.tuiles[(pos_snappée.x, pos_snappée.y)] = tuile # pyright: ignore[reportArgumentType]
         else:
             raise ValueError("Soit une tuile, soit une texture doit être fournie.")
     
     def get_tuile(self, pos: Vec2) -> Optional[place_holder.Tuile]:
         pos_snappée = palier(pos, self.taille_tuile)
-        return self.tuiles.get((pos_snappée.x, pos_snappée.y), None)
+        air =  place_holder.Tuile(pos=pos,texture="",taille=self.taille_tuile,tag ="air")
+        return self.tuiles.get((pos_snappée.x, pos_snappée.y), air)
     
 
 
@@ -420,6 +435,7 @@ class Grille:
         key = (pos_snappée.x, pos_snappée.y)
         if key in self.tuiles:
             del self.tuiles[key]
+            self.supprimer_tuile(self.tuiles.id)
 
     def afficher(self):
         for tuile in self.tuiles.values():
@@ -452,7 +468,7 @@ class evenement:
 
 
 def get_evenement():
-    """obtie juste les  evenemznt
+    """obtien juste les  evenement
 
     Returns:
         _type_: _description_
@@ -462,56 +478,11 @@ def get_evenement():
     res.type = fltk.type_ev(res.data)
     return res
 
-
-
-def test():
-    ouvrir_fenetre(True)
-    # Afficher une grille statique (pas besoin de recalculer à chaque frame)
-    grille = Grille(32)
-
-
-    grille.afficher()
-
-    afficher_fond("fichier_jeux/menus/image de fond.png", "fond")
-
-
-    # Position fixe pour le sprite
-
-    # Bouton avec gestion du hover
-    bouton_test = Bouton(
-        pos=Vec2(400, 400),
-        dim=Vec2(200, 60),
-        text="Test",
-        action_clique=lambda: print("Bouton cliqué !"),
-    )
-
-    bouton_test.afficher()
-
-
-    while True:
-        evenement = get_evenement()
-
-        
-
-        # Gestion du hover
-        bouton_test.action(evenement)
-
-        swapbuffer()
-        time.sleep(0.016)  # ~60 FPS
-
-        if shouldclose(evenement):
-            break
-
-    fermer()
-
-
-if __name__ == "__main__" :
-    logging.basicConfig(
-    level=logging.INFO, 
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    filename='graphisme.log',  
-    filemode='w'         
+logging.basicConfig(
+level=logging.INFO, 
+format='%(asctime)s - %(levelname)s - %(message)s',
+filename='graphisme.log',  
+filemode='w'         
 )
-    test()
 
         

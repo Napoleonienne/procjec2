@@ -44,17 +44,19 @@ class app:
         logging.info("Boucle principale terminée.")
        
     def menu_principal(self):
-        menuprincipal: Menu = Menu(
+        MenuPrincipal: Menu = Menu(
             "menu principal",
             "fichier_jeux/menus/image de fond.jpg",
             "fichier_jeux/menus/logo.png",
         )
+        MenuPrincipal.dim_logo = vec2(0.3, 0.27)
 
-        menuprincipal.ajouter_bouton(vec2(0.5, 0.43), vec2(0.2, 0.1), self.lancer_jeu, "jouer")
-        menuprincipal.ajouter_bouton(vec2(0.5, 0.57), vec2(0.2, 0.1), self.ouvrir_sauvegardes_depuis_menu, "sauvegardes")
-        menuprincipal.ajouter_bouton(vec2(0.5, 0.85), vec2(0.2, 0.1), self.ouvrir_editeur_niveau, "editeur de niveau")
-        menuprincipal.ajouter_bouton(vec2(0.5, 0.7), vec2(0.2, 0.1), self.fermer_jeu, "quitter")
+        MenuPrincipal.ajouter_bouton(vec2(0.5, 0.43), vec2(0.2, 0.1), self.lancer_jeu, "jouer")
+        MenuPrincipal.ajouter_bouton(vec2(0.5, 0.57), vec2(0.2, 0.1), self.ouvrir_sauvegardes_depuis_menu, "sauvegardes")
+        MenuPrincipal.ajouter_bouton(vec2(0.5, 0.85), vec2(0.2, 0.1), self.ouvrir_editeur_niveau, "editeur de niveau")
+        MenuPrincipal.ajouter_bouton(vec2(0.5, 0.7), vec2(0.2, 0.1), self.fermer_jeu, "quitter")
 
+        return MenuPrincipal
 
 
 

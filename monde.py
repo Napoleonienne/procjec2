@@ -131,17 +131,5 @@ class niveau:
         }
 
 
-def air(pos: vec2) -> Tuile:
-    """Renvoie une tuile d'air (non solide).
-    a voir
-    
-    
-    
-    """
-    tu =Tuile(pos, texture="", taille=32, tag="air")
-    tu.property["solide"] = False
-
-
-    return tu
 
         

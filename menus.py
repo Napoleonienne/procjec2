@@ -3,7 +3,6 @@ from typing import Callable, Optional
 import place_holder
 from vect import Vec2
 import graphisme
-import vect
 
 
 class Menu:
