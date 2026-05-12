@@ -4,6 +4,8 @@ certifi==2026.4.22
 charset-normalizer==3.4.6
 docopt==0.6.2
 eiffeltk==2025.1
+ffmpeg-python==0.2.0
+future==1.0.0
 idna==3.13
 nava==0.8
 packaging==26.2

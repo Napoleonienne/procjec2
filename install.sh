@@ -42,7 +42,7 @@ pip install -r "$SCRIPT_DIR/requirement.txt"
 
 
 pyinstaller --onefile --noconsole \
-  --name saute_mouton \
+  --name saute mouton \
     main.py \
   --add-data "fichier_jeux:fichier_jeux" \
   --hidden-import nava \

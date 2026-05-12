@@ -82,6 +82,8 @@ class niveau:
         self.devant = graphisme.Grille(8,"devant")     # Tuiles détaillées sans but précis
         self.plan_object:list[Sprite] = []     #  encore a determiner a utilit peut ere pour des decor plus complexe
 
+        self.gravite:vec2 = vec2(0, 5.0)
+
         self.point_fin:vec2 = fin or vec2(0.94, 0.9) # Point d'arrivé du niveau
 
 

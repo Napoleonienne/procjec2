@@ -44,14 +44,16 @@ def colision(obj1: Object2d,obj2:Object2d)->bool:
 
 
 
-def amorti(joueur: monde.joueur, tuile: Tuile) :
-    """
-    regle les colision si amortie
+def appliquer_gravite(joueur: monde.joueur, dt: float,monde:monde.niveau):
+    """applique la gravité au joueur
 
     Args:
-        joueur (monde.joueur): _description_
-        tuile (Tuile): _description_
+        joueur (monde.joueur): le joueur a qui appliquer la gravité
+        dt (float): le temps écoulé depuis la dernière mise à jour
+        monde (monde.niveau): le niveau actuel pour vérifier les collisions avec le terrain
     """
+    g = monde.gravite
+    joueur.vitesse -= g * dt 
     
 
 
@@ -68,6 +70,7 @@ def appliquer_physique(joueur: monde.joueur, dt: float,monde:monde.niveau):
         dt (float): _description_
         monde (monde.niveau): niveau actuel
     """
+
     
 
     logging.info(f"applique la physique par rapport aux taux")
@@ -77,17 +80,57 @@ def appliquer_physique(joueur: monde.joueur, dt: float,monde:monde.niveau):
     terain = monde.terrain
     g_d= monde.devant
     l_spr =monde.plan_object
+    
 
 
-    g_a.get_tuile(joueur.position)
-    terain.get_tuile(joueur.position)
-    g_d.get_tuile(joueur.position)
+    t =g_a.get_tuile(joueur.position)
+    y=terain.get_tuile(joueur.position)
+    j =g_d.get_tuile(joueur.position)
+
+
+
+
+    if colision(joueur,t):
+        logging.info("le joueur touche une tuile")
+        
+
+
+
+
+
+    if colision(joueur,y):
+        logging.info("le joueur touche une tuile de terrain")
+        if y.property.get("glissant", False):
+            terrain_glissant()
+        if y.property.get("rebondissante", False):
+            joueur.vitesse.y = -joueur.vitesse.y * 0.8  # Exemple de rebond
+        if y.property.get("amortissante", False):
+            joueur.vitesse.y = 0  # Arrête le mouvement vertical
+        if y.property.get("mortelle", False):
+            logging.info("le joueur est mort")
+            # Gérer la mort du joueur (réinitialiser le niveau, etc.)
+        
+
+
+
+    if colision(joueur,j):
+        logging.info("le joueur touche une tuile de devant")
+
+
+
+    if t.tag == "air" and y.tag == "air" and j.tag == "air":
+        appliquer_gravite(joueur, dt,monde)
+
+        
+
+    
 
     
 
     for sprite in l_spr:
         if colision(joueur, sprite):
             pass
+
        
                 
     return vect.Vec2

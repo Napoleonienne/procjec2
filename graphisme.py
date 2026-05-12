@@ -423,7 +423,7 @@ class Grille:
         else:
             raise ValueError("Soit une tuile, soit une texture doit être fournie.")
     
-    def get_tuile(self, pos: Vec2) -> Optional[place_holder.Tuile]:
+    def get_tuile(self, pos: Vec2) -> place_holder.Tuile:
         pos_snappée = palier(pos, self.taille_tuile)
         air =  place_holder.Tuile(pos=pos,texture="",taille=self.taille_tuile,tag ="air")
         return self.tuiles.get((pos_snappée.x, pos_snappée.y), air)
