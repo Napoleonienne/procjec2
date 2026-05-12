@@ -13,28 +13,6 @@ asset utiliser :
 - Les coordonnées `Vec2` utilisées pour l'interface sont normalisées (`x` et `y` entre `0` et `1`).
 
 ## Compiler avec PyInstaller
-Sous Linux/macOS :
-```
-pyinstaller --onefile --noconsole \
-  --name saute_mouton \
-  main.py \
-  --add-data "fichier_jeux:fichier_jeux" \
-  --hidden-import nava \
-  --hidden-import tkinter \
-  --hidden-import PIL.ImageTk \
-  --hidden-import PIL._tkinter_finder
-```
 
-Sous Windows (remplacer `:` par `;` dans `--add-data`) :
-```
-pyinstaller --onefile --noconsole ^
-  --name saute_mouton ^
-  main.py ^
-  --add-data "fichier_jeux;fichier_jeux" ^
-  --hidden-import nava ^
-  --hidden-import tkinter ^
-  --hidden-import PIL.ImageTk ^
-  --hidden-import PIL._tkinter_finder
-```
 
-Les sauvegardes sont stockées dans `~/.saute_mouton/save` pour la version PyInstaller.
+
