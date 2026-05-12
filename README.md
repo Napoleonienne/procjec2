@@ -6,7 +6,15 @@ procject universitaire de jeu saute mouton
 asset utiliser :
 [text](https://freesound.org/people/SG80_MED1A/sounds/789408/)
 
-## Lancer le jeu
+## Version C++23 (SDL2 + xmake)
+- Installer xmake et un compilateur C++23.
+- Construire : `xmake`
+- Exécuter : `xmake run saute_mouton`
+- Lancer depuis la racine du dépôt pour charger les assets.
+- Dépendances gérées par xmake : `sdl2`, `sdl2_image`, `nlohmann_json`.
+- Les boutons sont rendus comme rectangles pour l'instant (pas de rendu texte).
+
+## Lancer le jeu (Python)
 - Créer/activer un venv puis installer les dépendances : `pip install -r req.txt`
 - Exécuter : `python main.py`
 - La taille de fenêtre est configurée via `fichier_jeux/option jeux/option.json` (`fenetre.largeur`, `fenetre.hauteur`).
