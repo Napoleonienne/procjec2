@@ -66,10 +66,9 @@ def _normaliser_chemin(path: str | None) -> str | None:
 Vec2 = vect.Vec2
 
 
-HAUTEUR =600
-LARGEUR =round(HAUTEUR*16/9)
-FENETRE_HAUTEUR = HAUTEUR
-FENETRE_LARGEUR = LARGEUR
+
+FENETRE_HAUTEUR = 600
+FENETRE_LARGEUR = round(FENETRE_HAUTEUR*16/9)
 
 
 
@@ -90,8 +89,6 @@ def definir_fenetre(largeur: int | None = None, hauteur: int | None = None) -> N
 
 
 
-def _echelle() -> tuple[float, float]:
-    return (FENETRE_LARGEUR / LARGEUR, FENETRE_HAUTEUR / HAUTEUR)
 
 
 def vers_pixels(vec: Vec2) -> Vec2:
@@ -426,24 +423,27 @@ class Grille:
     def get_tuile(self, pos: Vec2) -> place_holder.Tuile:
         pos_snappée = palier(pos, self.taille_tuile)
         air =  place_holder.Tuile(pos=pos,texture="",taille=self.taille_tuile,tag ="air")
-        return self.tuiles.get((pos_snappée.x, pos_snappée.y), air)
+        return self.tuiles.get((pos_snappée.x, pos_snappée.y), air) # pyright: ignore[reportArgumentType, reportCallIssue]
     
 
 
     def supprimer_tuile(self, pos: Vec2):
         pos_snappée = palier(pos, self.taille_tuile)
         key = (pos_snappée.x, pos_snappée.y)
+        t = self.get_tuile(pos_snappée)
         if key in self.tuiles:
-            del self.tuiles[key]
-            self.supprimer_tuile(self.tuiles.id)
+            
+            del self.tuiles[key] # pyright: ignore[reportArgumentType]
+
+
 
     def afficher(self):
         for tuile in self.tuiles.values():
             afficher(tuile)
-    def effacer(self):
+    def desaficher(self):
         for tuile in self.tuiles.values():
-            tuile.effacer()
-            
+            fltk.efface(tuile.id)
+            tuile.id = None       
            
 
     def serialisation(self) -> dict[tuple[float, float], dict]:
