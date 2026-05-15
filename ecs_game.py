@@ -175,7 +175,7 @@ def _ouvrir_editeur_niveau(world: GameWorld) -> None:
     state.etat = "editeur_niveau"
 
 
-def _charger_sauvegarde(world: World, nom_sauvegarde: str) -> None:
+def _charger_sauvegarde(world: GameWorld, nom_sauvegarde: str) -> None:
     logging.info("chargement du niveau %s", nom_sauvegarde)
     niveau = filesytem.charger_niveau(nom_sauvegarde)
     _set_level(world, niveau)

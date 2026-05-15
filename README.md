@@ -14,6 +14,5 @@ asset utiliser :
 - Périmètre prioritaire : joueur, collisions, menus, sauvegardes.
 - Pipeline ECS basé sur `esper` dans `ecs_game.py` (composants + systèmes).
 - Multiprocessing : un worker de physique est prêt pour les tâches non‑UI (rendu gardé dans le processus principal).
-- La physique multiprocess est désactivée par défaut pour préserver le comportement actuel : passer `PHYSICS_ENABLED = True` dans `ecs_game.py` pour l'activer.
-
+- La physique multiprocessing est désactivée par défaut pour préserver le comportement actuel : passer `PHYSICS_ENABLED = True` dans `ecs_game.py` pour l'activer.
 
