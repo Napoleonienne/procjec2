@@ -137,6 +137,7 @@ celerybeat.pid
 # Environments
 .env
 .envrc
+.env_saute_mouton/
 .venv
 env/
 venv/
