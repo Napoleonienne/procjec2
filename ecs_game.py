@@ -4,18 +4,24 @@ from dataclasses import dataclass
 import logging
 import multiprocessing
 import queue
-from typing import Optional
+from typing import Any, Optional, Type, TypeVar
 
+import esper
 import filesytem
 import graphisme
 import monde
 from menus import Menu
 import vect
 
-from ecs import Scheduler, World
-
 vec2 = vect.Vec2
 PHYSICS_ENABLED = False
+T = TypeVar("T")
+
+
+class GameWorld(esper.World):
+    def __init__(self) -> None:
+        super().__init__()
+        self.resources: dict[str, Any] = {}
 
 
 @dataclass
@@ -88,32 +94,39 @@ class PhysicsWorker:
         self._process = None
 
 
-def _get_state(world: World) -> GameState:
+def _get_state(world: GameWorld) -> GameState:
     return world.resources["game_state"]
 
 
-def _get_level_component(world: World) -> LevelComponent:
+def _get_component(world: GameWorld, entity: int, component_type: Type[T]) -> T | None:
+    try:
+        return world.component_for_entity(entity, component_type)
+    except KeyError:
+        return None
+
+
+def _get_level_component(world: GameWorld) -> LevelComponent:
     entity = world.resources["level_entity"]
-    component = world.get_component(entity, LevelComponent)
+    component = _get_component(world, entity, LevelComponent)
     if component is None:
         raise RuntimeError("Niveau manquant dans l'ECS")
     return component
 
 
-def _get_player_component(world: World) -> PlayerComponent:
+def _get_player_component(world: GameWorld) -> PlayerComponent:
     entity = world.resources["player_entity"]
-    component = world.get_component(entity, PlayerComponent)
+    component = _get_component(world, entity, PlayerComponent)
     if component is None:
         raise RuntimeError("Joueur manquant dans l'ECS")
     return component
 
 
-def _set_level(world: World, level: monde.niveau) -> None:
+def _set_level(world: GameWorld, level: monde.niveau) -> None:
     level_component = _get_level_component(world)
     level_component.level = level
 
 
-def _set_player(world: World, player: monde.joueur) -> None:
+def _set_player(world: GameWorld, player: monde.joueur) -> None:
     player_component = _get_player_component(world)
     player_component.player = player
 
@@ -123,7 +136,7 @@ def _sync_player_sprite(player: monde.joueur) -> None:
         player.sprite.pos = player.position
 
 
-def _lancer_jeu(world: World) -> None:
+def _lancer_jeu(world: GameWorld) -> None:
     state = _get_state(world)
     state.jeu_pre = True
     state.etat = "jeu"
@@ -135,28 +148,28 @@ def _lancer_jeu(world: World) -> None:
     _sync_player_sprite(player_component.player)
 
 
-def _ouvrir_sauvegardes_depuis_menu(world: World) -> None:
+def _ouvrir_sauvegardes_depuis_menu(world: GameWorld) -> None:
     state = _get_state(world)
     state.jeu_pre = False
     state.etat = "menus_sauvegarde"
 
 
-def _fermer_jeu(world: World) -> None:
+def _fermer_jeu(world: GameWorld) -> None:
     state = _get_state(world)
     state.running = False
 
 
-def _reprendre_jeu(world: World) -> None:
+def _reprendre_jeu(world: GameWorld) -> None:
     state = _get_state(world)
     state.etat = "jeu"
 
 
-def _retour_menu(world: World) -> None:
+def _retour_menu(world: GameWorld) -> None:
     state = _get_state(world)
     state.etat = "menu"
 
 
-def _ouvrir_editeur_niveau(world: World) -> None:
+def _ouvrir_editeur_niveau(world: GameWorld) -> None:
     logging.info("Ouverture de l'éditeur de niveau")
     state = _get_state(world)
     state.etat = "editeur_niveau"
@@ -170,7 +183,7 @@ def _charger_sauvegarde(world: World, nom_sauvegarde: str) -> None:
     _get_state(world).etat = "jeu"
 
 
-def _menu_principal(world: World) -> Menu:
+def _menu_principal(world: GameWorld) -> Menu:
     menu_principal = Menu(
         "menu principal",
         "fichier_jeux/menus/image de fond.jpg",
@@ -194,13 +207,13 @@ def _menu_principal(world: World) -> Menu:
     return menu_principal
 
 
-def _menu_pause(world: World) -> Menu:
+def _menu_pause(world: GameWorld) -> Menu:
     menu_pause = Menu("menu pause", "fichier_jeux/menus/image de fond.jpg")
     menu_pause.ajouter_bouton(vec2(0.5, 0.5), vec2(0.2, 0.1), lambda: _reprendre_jeu(world), "reprendre")
     return menu_pause
 
 
-def _menu_sauvegarde(world: World) -> Menu:
+def _menu_sauvegarde(world: GameWorld) -> Menu:
     menu_sauvegarde = Menu("menuspause", "fichier_jeux/menus/image de fond.png")
     index = 0
 
@@ -218,7 +231,7 @@ def _menu_sauvegarde(world: World) -> Menu:
     return menu_sauvegarde
 
 
-def _ui_system(world: World) -> None:
+def _ui_system(world: GameWorld) -> None:
     state = _get_state(world)
     event = world.resources.get("event")
     if state.etat == "menu":
@@ -243,14 +256,14 @@ def _ui_system(world: World) -> None:
         _ouvrir_editeur_niveau(world)
 
 
-def _physics_system(world: World) -> None:
+def _physics_system(world: GameWorld) -> None:
     state = _get_state(world)
     if state.etat != "jeu":
         return
     player_entity = world.resources["player_entity"]
-    player_component = world.get_component(player_entity, PlayerComponent)
-    physics_component = world.get_component(player_entity, PhysicsComponent)
-    if player_component is None or physics_component is None or not physics_component.enabled:
+    player_component = _get_player_component(world)
+    physics_component = _get_component(world, player_entity, PhysicsComponent)
+    if physics_component is None or not physics_component.enabled:
         return
     dt = world.resources.get("dt", 0.0)
     if dt <= 0:
@@ -279,7 +292,7 @@ def _physics_system(world: World) -> None:
         world.resources["physics_pending"] = True
 
 
-def _render_system(world: World) -> None:
+def _render_system(world: GameWorld) -> None:
     state = _get_state(world)
     if state.etat != "jeu":
         return
@@ -295,23 +308,38 @@ def _render_system(world: World) -> None:
     player.afficher()
 
 
+class UiProcessor(esper.Processor):
+    def process(self) -> None:
+        _ui_system(self.world)
+
+
+class PhysicsProcessor(esper.Processor):
+    def process(self) -> None:
+        _physics_system(self.world)
+
+
+class RenderProcessor(esper.Processor):
+    def process(self) -> None:
+        _render_system(self.world)
+
+
 class EcsGame:
     def __init__(self) -> None:
-        self.world = World()
-        self.scheduler = Scheduler()
+        self.world = GameWorld()
         self._physics_worker = PhysicsWorker()
+        self._processors: list[esper.Processor] = []
         self._setup_world()
         self._setup_systems()
         self.running = True
 
     def _setup_world(self) -> None:
         level = monde.niveau()
-        level_entity = self.world.create_entity()
-        self.world.add_component(level_entity, LevelComponent(level))
-        player_entity = self.world.create_entity()
+        level_entity = self.world.create_entity(LevelComponent(level))
         player = monde.joueur(level.debut)
-        self.world.add_component(player_entity, PlayerComponent(player))
-        self.world.add_component(player_entity, PhysicsComponent(enabled=PHYSICS_ENABLED))
+        player_entity = self.world.create_entity(
+            PlayerComponent(player),
+            PhysicsComponent(enabled=PHYSICS_ENABLED),
+        )
         self.world.resources["game_state"] = GameState()
         self.world.resources["level_entity"] = level_entity
         self.world.resources["player_entity"] = player_entity
@@ -321,14 +349,15 @@ class EcsGame:
         self.world.resources["dt"] = 0.0
 
     def _setup_systems(self) -> None:
-        self.scheduler.add_system(_ui_system)
-        self.scheduler.add_system(_physics_system)
-        self.scheduler.add_system(_render_system)
+        self._processors = [UiProcessor(), PhysicsProcessor(), RenderProcessor()]
+        for processor in self._processors:
+            self.world.add_processor(processor)
 
     def step(self, event: graphisme.evenement | None, dt: float) -> None:
         self.world.resources["event"] = event
         self.world.resources["dt"] = dt
-        self.scheduler.run(self.world)
+        for processor in self._processors:
+            processor.process()
         self.running = self.world.resources["game_state"].running
 
     def shutdown(self) -> None:
