@@ -1,6 +1,9 @@
+from doctest import debug_script
 import logging
+from turtle import pos
 import graphisme
 from place_holder import Sprite, Tuile,Object2d
+import place_holder
 import vect
 import monde
 
@@ -87,18 +90,71 @@ def ressoudre_colision(obj1: monde.joueur,obj2:Object2d):
             obj1.vitesse.x = 0
         case "haut":
             obj1.position.y = obj2_hg.y - obj1.sprite.taille.y / 2
-            obj1.vitesse = vect.Vec2()
-            obj1.direction = vect.Vec2()
+            obj1.vitesse.y = 0
+            obj1.direction.y = 0
         case "bas":
             obj1.position.y = obj2_bd.y + obj1.sprite.taille.y / 2
             obj1.vitesse.y = 0
             obj1.direction.y = 0
+        
+        
+    
 
 
 
 
 
+def apply_gravite(joueur:monde.joueur,monde:monde.niveau,dt:float):
+    """applique la gravité au joueur
 
+    Args:
+        joueur (monde.joueur): le joueur
+        monde (monde.niveau): le niveau actuel du jeu
+        dt (float): le temps écoulé depuis le dernier update
+    """
+    joueur.vitesse += monde.gravite * dt
+
+
+def applique_vitesse(joueur:monde.joueur,dt:float):
+    """applique la vitesse au joueur
+
+    Args:
+        joueur (monde.joueur): le joueur
+        dt (float): le temps écoulé depuis le dernier update
+    """
+    joueur.position += joueur.vitesse * dt
+
+def apply_direction(joueur:monde.joueur,dt:float):
+    """applique la direction au joueur
+
+    Args:
+        joueur (monde.joueur): le joueur
+        dt (float): le temps écoulé depuis le dernier update
+    """
+    joueur.vitesse += joueur.direction * dt
+
+def applique_effet(joueur:monde.joueur,tuile:place_holder.Tuile,nv:monde.niveau,dt:float):
+    """applique les effets au joueur
+
+    Args:
+        joueur (monde.joueur): le joueur
+        dt (float): le temps écoulé depuis le dernier update
+    """
+
+
+    if tuile.property.get("rebondissante", False):
+        joueur.vitesse.y = -joueur.vitesse.y * 1.5
+    if tuile.property.get("glissante", False):
+        joueur.vitesse.x += joueur.direction.x * 0.1
+    if tuile.property.get("amortissante", False):
+        joueur.vitesse
+    if tuile.property.get("mortelle", False):
+        joueur.position = nv.debut
+        joueur.vitesse = vect.Vec2(0, 0)
+        joueur.direction = vect.Vec2(0, 0)
+
+
+   
 
 
 def update_physique(monde:monde.niveau,dt:float,joueur:monde.joueur):
@@ -109,6 +165,13 @@ def update_physique(monde:monde.niveau,dt:float,joueur:monde.joueur):
         dt (float): le temps écoulé depuis le dernier update
         joueur (monde.joueur): le joueur
     """
+    apply_direction(joueur,dt)
+    apply_gravite(joueur,monde,dt)
+    applique_vitesse(joueur,dt)
+    for tuile in monde.terrain:
+        if colision(joueur, tuile) and tuile.property.get("solide", False):
+            ressoudre_colision(joueur, tuile)
+            applique_effet(joueur, tuile, monde, dt)
 
 
 
