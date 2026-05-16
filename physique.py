@@ -8,6 +8,13 @@ import vect
 import monde
 
 
+
+
+
+GRAVITE = vect.Vec2(0, 9.81)
+
+
+
 def set_gravite(g:vect.Vec2,monde:monde.niveau):
     monde.gravite = g
 

@@ -6,9 +6,10 @@ import graphisme
 from menus import Menu
 import filesytem
 import monde
+import physique
+import ed
 
 vec2 = vect.Vec2
-NANOSECONDES_PAR_SECONDE = 1_000_000_000
 
 logging.basicConfig(
     level=logging.INFO, 
@@ -32,7 +33,23 @@ class app:
         self.level_actuel = monde.niveau()
         self.joueur_actuel: monde.joueur | None = None  
 
+
+        self.MenuPrincipal:Menu =Menu(
+            "menu principal",
+            "fichier_jeux/menus/image de fond.jpg",
+            "fichier_jeux/menus/logo.png",
+        )
+
+        self.MenuPause:Menu = Menu("menu pause", "fichier_jeux/menus/image de fond.jpg")
+
+        self.joueur:list[monde.joueur] = []
+
+
     
+
+
+        self.saut_temp = None
+    #partie plublic de l'app
     def run(self):
         options = filesytem.charger_options()
         fenetre = options["fenetre"]
@@ -42,19 +59,28 @@ class app:
         self.mainloop()
         graphisme.fermer()
         logging.info("Boucle principale terminée.")
-       
-    def menu_principal(self):
-        MenuPrincipal: Menu = Menu(
-            "menu principal",
-            "fichier_jeux/menus/image de fond.jpg",
-            "fichier_jeux/menus/logo.png",
-        )
-        MenuPrincipal.dim_logo = vec2(0.3, 0.27)
 
-        MenuPrincipal.ajouter_bouton(vec2(0.5, 0.43), vec2(0.2, 0.1), self.lancer_jeu, "jouer")
-        MenuPrincipal.ajouter_bouton(vec2(0.5, 0.57), vec2(0.2, 0.1), self.ouvrir_sauvegardes_depuis_menu, "sauvegardes")
-        MenuPrincipal.ajouter_bouton(vec2(0.5, 0.85), vec2(0.2, 0.1), self.ouvrir_editeur_niveau, "editeur de niveau")
-        MenuPrincipal.ajouter_bouton(vec2(0.5, 0.7), vec2(0.2, 0.1), self.fermer_jeu, "quitter")
+
+
+
+
+
+
+
+
+
+
+
+
+    #partie privée de l'app
+    def menu_principal(self):
+     
+        self.MenuPrincipal.dim_logo = vec2(0.3, 0.27)
+
+        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.43), vec2(0.2, 0.1), self.lancer_jeu, "jouer")
+        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.57), vec2(0.2, 0.1), self.ouvrir_sauvegardes_depuis_menu, "sauvegardes")
+        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.85), vec2(0.2, 0.1), self.ouvrir_editeur_niveau, "editeur de niveau")
+        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.7), vec2(0.2, 0.1), self.fermer_jeu, "quitter")
 
         return MenuPrincipal
 
@@ -73,9 +99,7 @@ class app:
         
     
     def menu_pause(self):
-        menuPause: Menu = Menu("menu pause", "fichier_jeux/menus/image de fond.jpg")
-        menuPause.ajouter_bouton(vec2(0.5, 0.5), vec2(0.2, 0.1), self.reprendre_jeu, "reprendre")
-        return menuPause
+        self.MenuPause.ajouter_bouton(vec2(0.5, 0.5), vec2(0.2, 0.1), self.reprendre_jeu, "reprendre")
 
     def lancer_jeu(self):
         self.jeu_pre = True
@@ -136,12 +160,14 @@ class app:
     def mainloop(self):
         logging.info("Démarrage de la boucle principale.")
         evenement:graphisme.evenement | None = None
+        
        
         while self.en_cours and not graphisme.shouldclose(evenement):
+            sv_pos_joueur = self.joueur_actuel.position if self.joueur_actuel else None
             evenement = graphisme.get_evenement()
         
             firstframe = time.time_ns()
-            graphisme.effacer_tout()
+            graphisme.effacerTout()
 
             match self.etat:
                 case "menu":
@@ -150,7 +176,19 @@ class app:
                     for bouton in menu.bouton:
                         bouton.action(evenement)
                 case "jeu":
+                    
                     self.afficher_jeu()
+                    if evenement.type == "ClicGauche":
+                        graphisme.get_clic_gauche(evenement)
+
+
+                    
+
+
+
+
+
+
                 case "pause":
                     menu = self.menu_pause()
                     menu.afficher()
@@ -173,5 +211,5 @@ class app:
             if self.lastframe is None:
                 self.dt = 0
             else:
-                self.dt = (firstframe - self.lastframe) / NANOSECONDES_PAR_SECONDE
+                self.dt = (firstframe - self.lastframe)
             self.lastframe = firstframe

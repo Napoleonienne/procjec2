@@ -95,9 +95,28 @@ def vers_pixels(vec: Vec2) -> Vec2:
     return Vec2(vec.x * FENETRE_LARGEUR, vec.y * FENETRE_HAUTEUR)
 
 
-def vers_coordonnees(vec: Vec2) -> Vec2:
+def versCoordonneNormaliser(vec: Vec2) -> Vec2:
+    """_summary_
+
+    Args:
+        vec (Vec2): la position entrer en pixel
+
+    Returns:
+        Vec2: _description_
+    """
 
     return Vec2(vec.x / FENETRE_LARGEUR, vec.y / FENETRE_HAUTEUR)
+
+def verscoordonnefenetre(vec: Vec2) -> Vec2:
+    """_summary_
+
+    Args:
+        vec (Vec2): la position entrer en coordonné normalisé
+
+    Returns:
+        Vec2: _description_
+    """
+    return Vec2(vec.x * FENETRE_LARGEUR, vec.y * FENETRE_HAUTEUR)
 
 
 def valeur_pixels(val: float) -> float:
@@ -178,7 +197,7 @@ def swapbuffer():
     logging.info("graphisme : Echange du buffer pour afficher la nouvelle image")
     fltk.mise_a_jour()
 
-def effacer_tout() -> None:
+def effacerTout() -> None:
     """Efface tout le contenu actuellement affiché."""
     fltk.efface_tout()
 
@@ -331,7 +350,7 @@ class Bouton:
         x, y =  fltk.abscisse_souris(), fltk.ordonnee_souris()
         if x is None or y is None:
             return False
-        pos_pixels = vers_coordonnees(Vec2(x, y))
+        pos_pixels = versCoordonneNormaliser(Vec2(x, y))
         hover = (
             self.coin_haut_gauche.x < pos_pixels.x < self.coin_bas_droit.x and
             self.coin_haut_gauche.y < pos_pixels.y < self.coin_bas_droit.y
@@ -349,7 +368,7 @@ class Bouton:
             if (
                 x is not None and y is not None
             ):
-                pos_pixels = vers_coordonnees(Vec2(x, y))
+                pos_pixels = versCoordonneNormaliser(Vec2(x, y))
                 if (
                     self.coin_haut_gauche.x < pos_pixels.x < self.coin_bas_droit.x and
                     self.coin_haut_gauche.y < pos_pixels.y < self.coin_bas_droit.y
@@ -385,7 +404,25 @@ def afficher(object: place_holder.Object2d, tag: str = ""):
 
 
 
-    
+def get_pos_souris() -> Vec2:
+    """obtient les coordoné de la souris exprimé entre 0 et 1
+
+    Returns:
+        Vec2: _description_
+    """
+    x, y = fltk.abscisse_souris(), fltk.ordonnee_souris()
+    if x is None or y is None:
+        return Vec2(0, 0)
+    return versCoordonneNormaliser(Vec2(x, y))
+
+def get_clic_gauche(ev:evenement) -> Vec2:
+    """obtient la position du clic gauche de la souris en coordonnées normalisées.
+
+
+    Returns:
+        Optional[Vec2]: _description_
+    """
+    return versCoordonneNormaliser(Vec2(fltk.abscisse(ev.data), fltk.ordonnee(ev.data)))  # type: ignore
 
 class Grille:
     def __init__(self, taille_tuile: int, tag: str):
