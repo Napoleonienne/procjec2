@@ -7,7 +7,7 @@ from menus import Menu
 import filesytem
 import monde
 import physique
-import ed
+
 
 vec2 = vect.Vec2
 
@@ -182,17 +182,17 @@ class app:
                 case "jeu":
                     
                     self.afficher_jeu()
-                    if evenement.type == "ClicGauche" and self.joueur_actuel.vistesse == vec2(0,0):
+                    if evenement.type == "ClicGauche" and self.joueur_actuel.vistesse == vec2(0,0): # type: ignore
                         temp =graphisme.get_clic_gauche(evenement)
-                        j =temp -self.joueur_actuel.position
+                        j =temp -self.joueur_actuel.position # type: ignore
                         if vect.norme(j) > self.distance_max:
                             j = self.distance_max
                         pos_clique_gauche = j
-                    if evenement.type == "clicDroit" and self.joueur_actuel.vistesse:
-                        self.joueur_actuel.vistesse = pos_clique_gauche
+                    if evenement.type == "clicDroit" and self.joueur_actuel.vistesse: # type: ignore
+                        self.joueur_actuel.vistesse = pos_clique_gauche # type: ignore
 
 
-                    physique.update_physique(self.level_actuel, self.pas, self.joueur_actuel) 
+                    physique.update_physique(self.level_actuel, self.pas, self.joueur_actuel)  # type: ignore
 
 
                         
@@ -207,8 +207,8 @@ class app:
 
                 case "pause":
                     menu = self.initialize_menu_pause()
-                    menu.afficher()
-                    for bouton in menu.bouton:
+                    menu.afficher() # type: ignore
+                    for bouton in menu.bouton: # type: ignore
                         bouton.action(evenement)
                 case "menus_sauvegarde":
                     menu = self.menus_sauvegarde()

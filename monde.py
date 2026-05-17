@@ -1,6 +1,5 @@
 import logging
 from typing import Any
-from graphisme import HAUTEUR, LARGEUR
 
 import graphisme
 import vect

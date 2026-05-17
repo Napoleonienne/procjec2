@@ -71,6 +71,13 @@ class EditeurNiveau:
 
     def ajouter_tuile(self, pos: vect.Vec2):
         
+
+
+
+
+
+        return True
+        
     
 
 
