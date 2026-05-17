@@ -54,6 +54,7 @@ class app:
         options = filesytem.charger_options()
         fenetre = options["fenetre"]
         self.distance_max = options["VMAX"]
+        self.pas = options["PAS"]
         self.initialize_main_menu()
         self.initialize_menu_pause()
         graphisme.ouvrir_fenetre(largeur=fenetre["largeur"], hauteur=fenetre["hauteur"])
@@ -181,16 +182,17 @@ class app:
                 case "jeu":
                     
                     self.afficher_jeu()
-                    if evenement.type == "ClicGauche":
+                    if evenement.type == "ClicGauche" and self.joueur_actuel.vistesse == vec2(0,0):
                         temp =graphisme.get_clic_gauche(evenement)
                         j =temp -self.joueur_actuel.position
                         if vect.norme(j) > self.distance_max:
                             j = self.distance_max
                         pos_clique_gauche = j
-                    if evenement.type == "clicDroit":
-                        self.joueur.vistesse = pos_clique_gauche
+                    if evenement.type == "clicDroit" and self.joueur_actuel.vistesse:
+                        self.joueur_actuel.vistesse = pos_clique_gauche
 
-                    physique.update_physique(self.level_actuel, self.dt, self.joueur_actuel)
+
+                    physique.update_physique(self.level_actuel, self.pas, self.joueur_actuel) 
 
 
                         

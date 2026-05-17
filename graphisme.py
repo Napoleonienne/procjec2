@@ -446,28 +446,28 @@ class Grille:
             ValueError: _description_
         """
 
-        pos_snappée = palier(pos, self.taille_tuile)
+        pos_snappee = palier(pos, self.taille_tuile)
 
         if tuile is not None:
             self.tuiles[(tuile.pos.x, tuile.pos.y)] = tuile
         elif texture is not None:
             tuile = place_holder.Tuile(pos, texture, self.taille_tuile)
             tuile.property.update(property)
-            self.tuiles[(pos_snappée.x, pos_snappée.y)] = tuile # pyright: ignore[reportArgumentType]
+            self.tuiles[(pos_snappee.x, pos_snappee.y)] = tuile # pyright: ignore[reportArgumentType]
         else:
             raise ValueError("Soit une tuile, soit une texture doit être fournie.")
     
     def get_tuile(self, pos: Vec2) -> place_holder.Tuile:
-        pos_snappée = palier(pos, self.taille_tuile)
+        pos_snappee = palier(pos, self.taille_tuile)
         air =  place_holder.Tuile(pos=pos,texture="",taille=self.taille_tuile,tag ="air")
-        return self.tuiles.get((pos_snappée.x, pos_snappée.y), air) # pyright: ignore[reportArgumentType, reportCallIssue]
+        return self.tuiles.get((pos_snappee.x, pos_snappee.y), air) # pyright: ignore[reportArgumentType, reportCallIssue]
     
 
 
     def supprimer_tuile(self, pos: Vec2):
-        pos_snappée = palier(pos, self.taille_tuile)
-        key = (pos_snappée.x, pos_snappée.y)
-        t = self.get_tuile(pos_snappée)
+        pos_snappee = palier(pos, self.taille_tuile)
+        key = (pos_snappee.x, pos_snappee.y)
+        t = self.get_tuile(pos_snappee)
         if key in self.tuiles:
             
             del self.tuiles[key] # pyright: ignore[reportArgumentType]
