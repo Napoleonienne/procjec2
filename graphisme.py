@@ -416,13 +416,13 @@ def get_pos_souris() -> Vec2:
     return versCoordonneNormaliser(Vec2(x, y))
 
 def get_clic_gauche(ev:evenement) -> Vec2:
-    """obtient la position du clic gauche de la souris en coordonnées normalisées.
+    """obtient la position du clic gauche de la souris en coordonnées .
 
 
     Returns:
         Optional[Vec2]: _description_
     """
-    return versCoordonneNormaliser(Vec2(fltk.abscisse(ev.data), fltk.ordonnee(ev.data)))  # type: ignore
+    return Vec2(fltk.abscisse(ev.data), fltk.ordonnee(ev.data)) # type: ignore
 
 class Grille:
     def __init__(self, taille_tuile: int, tag: str):

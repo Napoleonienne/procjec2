@@ -32,7 +32,7 @@ class app:
         self.lastframe: int | None = None
         self.level_actuel = monde.niveau()
         self.joueur_actuel: monde.joueur | None = None  
-
+        self.distance_max = 0
 
         self.MenuPrincipal:Menu =Menu(
             "menu principal",
@@ -53,6 +53,9 @@ class app:
     def run(self):
         options = filesytem.charger_options()
         fenetre = options["fenetre"]
+        self.distance_max = options["VMAX"]
+        self.initialize_main_menu()
+        self.initialize_menu_pause()
         graphisme.ouvrir_fenetre(largeur=fenetre["largeur"], hauteur=fenetre["hauteur"])
         filesytem.peupler_sauvegardes()
         
@@ -73,7 +76,7 @@ class app:
 
 
     #partie privée de l'app
-    def menu_principal(self):
+    def initialize_main_menu(self):
      
         self.MenuPrincipal.dim_logo = vec2(0.3, 0.27)
 
@@ -82,7 +85,6 @@ class app:
         self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.85), vec2(0.2, 0.1), self.ouvrir_editeur_niveau, "editeur de niveau")
         self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.7), vec2(0.2, 0.1), self.fermer_jeu, "quitter")
 
-        return MenuPrincipal
 
 
 
@@ -98,7 +100,7 @@ class app:
         logging.info("Ouverture de l'éditeur de niveau")
         
     
-    def menu_pause(self):
+    def initialize_menu_pause(self):
         self.MenuPause.ajouter_bouton(vec2(0.5, 0.5), vec2(0.2, 0.1), self.reprendre_jeu, "reprendre")
 
     def lancer_jeu(self):
@@ -160,10 +162,12 @@ class app:
     def mainloop(self):
         logging.info("Démarrage de la boucle principale.")
         evenement:graphisme.evenement | None = None
+
         
        
         while self.en_cours and not graphisme.shouldclose(evenement):
             sv_pos_joueur = self.joueur_actuel.position if self.joueur_actuel else None
+            pos_clique_gauche = None
             evenement = graphisme.get_evenement()
         
             firstframe = time.time_ns()
@@ -171,15 +175,25 @@ class app:
 
             match self.etat:
                 case "menu":
-                    menu = self.menu_principal()
-                    menu.afficher()
-                    for bouton in menu.bouton:
+                    self.MenuPrincipal.afficher()
+                    for bouton in self.MenuPrincipal.bouton:
                         bouton.action(evenement)
                 case "jeu":
                     
                     self.afficher_jeu()
                     if evenement.type == "ClicGauche":
-                        graphisme.get_clic_gauche(evenement)
+                        temp =graphisme.get_clic_gauche(evenement)
+                        j =temp -self.joueur_actuel.position
+                        if vect.norme(j) > self.distance_max:
+                            j = self.distance_max
+                        pos_clique_gauche = j
+                    if evenement.type == "clicDroit":
+                        self.joueur.vistesse = pos_clique_gauche
+
+                    physique.update_physique(self.level_actuel, self.dt, self.joueur_actuel)
+
+
+                        
 
 
                     
@@ -190,7 +204,7 @@ class app:
 
 
                 case "pause":
-                    menu = self.menu_pause()
+                    menu = self.initialize_menu_pause()
                     menu.afficher()
                     for bouton in menu.bouton:
                         bouton.action(evenement)
