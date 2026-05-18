@@ -115,7 +115,8 @@ def ressoudre_colision(obj1: monde.joueur,obj2:Object2d):
 
 
 def applique_effet(joueur:monde.joueur,tuile:place_holder.Tuile,nv:monde.niveau):
-    """applique les effets au joueur
+    """
+    applique les effets au joueur
 
     Args:
         joueur (monde.joueur): le joueur
@@ -141,7 +142,8 @@ def applique_effet(joueur:monde.joueur,tuile:place_holder.Tuile,nv:monde.niveau)
 
 
 def update_physique(monde:monde.niveau,dt:float,joueur:monde.joueur):
-    """va update la physique a chaque frame, en appliquant la gravité et en gérant les colision entre le joueur et les tuiles du terrain
+    """
+    va update la physique a chaque frame, en appliquant la gravité et en gérant les colision entre le joueur et les tuiles du terrain
 
     Args:
         monde (monde.niveau): le niveau actuel du jeu

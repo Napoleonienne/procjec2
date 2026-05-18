@@ -27,12 +27,13 @@ class app:
     def __init__(self):
         self.en_cours = True
         self.jeu_pre = True
-        self.etat = "menu"
+        self.etat = "menu" # etat possible : menu, jeu, pause, menus_sauvegarde, editeur_niveau
         self.dt = 0
         self.lastframe: int | None = None
         self.level_actuel = monde.niveau()
         self.joueur_actuel: monde.joueur | None = None  
         self.distance_max = 0
+        self.menusaugarde:Menu = Menu("menuspause", "fichier_jeux/menus/image de fond.png") 
 
         self.MenuPrincipal:Menu =Menu(
             "menu principal",
@@ -57,6 +58,7 @@ class app:
         self.pas = options["PAS"]
         self.initialize_main_menu()
         self.initialize_menu_pause()
+        self.initialiser_menus_sauvegarde()
         graphisme.ouvrir_fenetre(largeur=fenetre["largeur"], hauteur=fenetre["hauteur"])
         filesytem.peupler_sauvegardes()
         
@@ -126,8 +128,8 @@ class app:
         self.etat = "menu"
 
 
-    def menus_sauvegarde(self):
-        menusaugarde: Menu = Menu("menuspause", "fichier_jeux/menus/image de fond.png")
+    def initialiser_menus_sauvegarde(self):
+        self.menusaugarde: Menu = Menu("menuspause", "fichier_jeux/menus/image de fond.png")
         index = 0
 
         def creer_action_sauvegarde(nom_sauvegarde: str, chemin_sauvegarde):
@@ -141,14 +143,15 @@ class app:
         for key,path in filesytem.sauvegardes_dispo.items():
             y = 0.2 + index * 0.08
             action = creer_action_sauvegarde(key, path)
-            menusaugarde.ajouter_bouton(vec2(0.5, y),vec2(0.08,0.05),action,f"sauvegarde : {key}")
+            self.menusaugarde.ajouter_bouton(vec2(0.5, y),vec2(0.08,0.05),action,f"sauvegarde : {key}")
             index += 1
 
     
 
-        menusaugarde.ajouter_bouton(vec2(0.05,0.17),vec2(0.08,0.05),self.retour_menu,"quitter")
+        self.menusaugarde.ajouter_bouton(vec2(0.05,0.17),vec2(0.08,0.05),self.retour_menu,"quitter")
 
-        return menusaugarde
+        return self.menusaugarde
+    
 
     def afficher_jeu(self):
         self.level_actuel.afficher_fond()
@@ -211,7 +214,7 @@ class app:
                     for bouton in menu.bouton: # type: ignore
                         bouton.action(evenement)
                 case "menus_sauvegarde":
-                    menu = self.menus_sauvegarde()
+                    menu = self.initialiser_menus_sauvegarde()
                     menu.afficher()
                     for bouton in menu.bouton:
                         bouton.action(evenement)

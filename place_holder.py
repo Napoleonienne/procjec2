@@ -18,8 +18,8 @@ class Object2d:
                
         """
         self.id: int | None = None
-        self._texture: str = texture
-        self._pos: vec2 = pos
+        self.texture: str = texture
+        self.pos: vec2 = pos
         self.tag: str = tag
 
         if isinstance(taille, int):
@@ -30,18 +30,9 @@ class Object2d:
         self.property ={
 
         }
-    @property
-    def pos(self) -> vec2:
-        return self._pos
 
-    @pos.setter
-    def pos(self, value: vec2):
-        self._pos = value
 
-    @property
-    def texture(self) -> str:
-        return self._texture
-
+ 
     @property
     def taille(self) -> vec2:
         return self._taille
@@ -56,16 +47,28 @@ class Object2d:
 
     @property
     def coin_haut_gauche(self) -> vec2:
-        """Coin haut-gauche du rectangle"""
+        """
+
+        Returns:
+            vec2: le resultat
+        """
         return self.pos - self.taille / 2
 
     @property
     def coin_bas_droit(self) -> vec2:
-        """Coin bas-droit du rectangle"""
+        """
+
+        Returns:
+            vec2: le resultat
+        """
         return self.pos + self.taille / 2
 
     def serialisation(self) -> dict:
-        """Sérialise l'objet en dictionnaire pour JSON."""
+        """serialise l'object en dictionnaire
+
+        Returns:
+            dict: _description_
+        """
         return {
             "pos": {"x": self.pos.x, "y": self.pos.y},
             "taille": {"x": self.taille.x, "y": self.taille.y},

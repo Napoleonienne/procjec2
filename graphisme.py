@@ -1,35 +1,21 @@
-from __future__ import annotations
+try:
+    from __future__ import annotations
+except ImportError:
+    pass
 
 from dataclasses import dataclass
-from email.policy import default
-import multiprocessing.pool
-import operator
 
 import fltk
 import vect
 import logging
-import time
 import itertools
 import os
 from pathlib import Path
 import sys
-from typing import Optional, Callable, Tuple, overload
-from tkinter import Tk, Event as TkEvent
+from typing import Optional, Callable
 import place_holder
-import multiprocessing
 
 
-def process(f,*kwarg):
-    """permet d'executer une fonction dans un processus a part pour pas faire freeze la fenetre
-
-    Args:
-        f (function): la fonction a executer
-        *kwarg: les argument de la fonction
-    """
-    logging.info(f"graphisme : Lancement de la fonction '{f.__name__}' dans un processus séparé avec les arguments {kwarg}")
-    pool = multiprocessing.Pool(processes=1)
-    pool.apply_async(f, kwarg)
-    pool.close()
 
 
 def chemin_absolue(relative_path: str) -> str:
@@ -53,13 +39,6 @@ def chemin_absolue(relative_path: str) -> str:
     return str(res)
 
 
-def _normaliser_chemin(path: str | None) -> str | None:
-    if path is None:
-        return None
-    if os.path.isabs(path):
-        return path
-    return chemin_absolue(path)
-    
 
 
 
@@ -72,20 +51,19 @@ FENETRE_LARGEUR = round(FENETRE_HAUTEUR*16/9)
 
 
 
-def definir_fenetre(largeur: int | None = None, hauteur: int | None = None) -> None:
+def definir_fenetre(largeur: int, hauteur: int) -> None:
     """
     definir les dimmesion de la fenetre 
     si elle sont changer
 
     Args:
-        largeur (int | None, optional): largeur de la fenetre
-        hauteur (int | None, optional): hauteur de la fenetre
+        largeur (int): largeur de la fenetre
+        hauteur (int): hauteur de la fenetre
     """
     global FENETRE_LARGEUR, FENETRE_HAUTEUR
-    if largeur is not None:
-        FENETRE_LARGEUR = largeur
-    if hauteur is not None:
-        FENETRE_HAUTEUR = hauteur
+    FENETRE_LARGEUR = largeur
+    FENETRE_HAUTEUR = hauteur
+
 
 
 
@@ -247,7 +225,11 @@ def creer_texte(pos:Vec2,taile:float,texte:str)->int:
     return id
 
 def afficher_fond(path: str | None, tag):
-    chemin = _normaliser_chemin(path)
+    try:
+        chemin = chemin_absolue(path)
+    except Exception as e:
+        logging.error(f"erreur lors du chargement de l'image : {e}")
+        return
     if chemin is None:
         return
     centre = vers_pixels(Vec2(0.5, 0.5))
@@ -272,9 +254,9 @@ class Bouton:
         pos: Vec2,
         dim: Vec2,
         text: str,
-        action_clique: Callable[[], None],
+        action_clique: Callable,
         couleur: str = "blue",
-        couleur_hover: str = "lightblue",
+        couleur_hover: str = "lightblue",#vraiment avoir
         taille_texte: float = 0.03,
         tag: Optional[str] = None
     ) -> None:
@@ -289,7 +271,7 @@ class Bouton:
         self.taille_texte = taille_texte
         self.actif = True
         self.hover = False # je sais pas comment faire a part le laisser tourner pendant tout execution de la fenetre pour verifier  mais sa me parait pas ouf
-        self.id_rect: Optional[int] = None
+        self.id_rect: Optional[int] = None 
         self.id_texte: Optional[int] = None
         self.tag = tag
 
