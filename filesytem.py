@@ -1,6 +1,8 @@
 import logging
 from pathlib import Path
 import json
+
+from numpy import isin
 from vect import Vec2
 from monde import niveau
 from place_holder import Tuile, Sprite
@@ -34,7 +36,17 @@ def peupler_sauvegardes():
 
 
 def charger_options():
-    """Charge les options du jeu depuis un fichier JSON."""
+    """charge les option
+    et gere erreur si le fichier option n'est pas present
+
+    Raises:
+        ValueError: si le fichier existe
+        ValueError: _description_
+        Exception: _description_
+
+    Returns:
+        _type_: dictionnaire des option
+    """
     options_path = Path(graphisme.chemin_absolue("fichier_jeux/option jeux/option.json"))
     try:
         logging.info(f"Chargement des options depuis '{options_path}'")
@@ -43,15 +55,29 @@ def charger_options():
             options = json.load(f)
             fenetre = options.get("fenetre")
             if not isinstance(fenetre, dict):
-                raise ValueError("Champ 'fenetre' manquant dans les options")
-            largeur = fenetre.get("largeur")
-            hauteur = fenetre.get("hauteur")
-            if not isinstance(largeur, int) or not isinstance(hauteur, int):
-                raise ValueError("Les dimensions de fenêtre doivent être des entiers")
+                logging.error("la section 'fenetre' doit être un dictionnaire dans les options.")
+            largeur = fenetre.get("largeur") 
+            hauteur = fenetre.get("hauteur") 
+
+            # Valide et normalise les dimensions de la fenêtre
+            if isinstance(largeur, int):
+                pass
+            elif isinstance(largeur, str) and largeur.isdigit() or isinstance(largeur, float):
+                largeur = int(largeur)
+            else:
+                largeur = graphisme.FENETRE_LARGEUR
+
+            if isinstance(hauteur, int):
+                pass
+            elif isinstance(hauteur, str) and hauteur.isdigit() or isinstance(hauteur, float):
+                hauteur = int(hauteur)
+            else:
+                hauteur = graphisme.FENETRE_HAUTEUR
+
             logging.info("Options chargées avec succès.")
             return options
-    except (AssertionError, json.JSONDecodeError, ValueError):
-        logging.error(f"Erreur lors du chargement des options depuis '{options_path}'")
+    except (AssertionError) as e:
+        logging.error(f"Erreur lors du chargement des options depuis '{options_path}' :{e}   ")
         raise Exception(f"Erreur lors du chargement des options depuis '{options_path}'")
     return {}
 
@@ -90,10 +116,10 @@ def charger_niveau(nom: str)-> niveau:
     fin = Vec2(donne_niveau["point_fin"]["x"], donne_niveau["point_fin"]["y"])
     niveau_charger = niveau(debut, fin)
     niveau_charger.fond = donne_niveau["fond"]
-    niveau_charger.avant = Grille(32)
-    niveau_charger.decor = Grille(16)
-    niveau_charger.terrain = Grille(16)
-    niveau_charger.devant = Grille(8)  
+    niveau_charger.avant = Grille(32,tag='avant')
+    niveau_charger.decor = Grille(16,tag='decor')
+    niveau_charger.terrain = Grille(16,tag='terrain')
+    niveau_charger.devant = Grille(8,tag='devant')
 
     peupler_niveau(donne_niveau, niveau_charger, "avant")
     peupler_niveau(donne_niveau, niveau_charger, "decor")

@@ -24,6 +24,8 @@ class Vec2:
             return Vec2(self.x/other ,self.y/other)
     def __str__(self) -> str:
         return f"({self.x},{self.y})"
+    def en_tuple(self)->tuple:
+        return (self.x,self.y)
    
 
 def norme(vec:Vec2)->float:

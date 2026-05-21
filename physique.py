@@ -95,6 +95,8 @@ def ressoudre_colision(obj1: monde.joueur,obj2:Object2d):
             obj1.position.x = obj2_bd.x + obj1.sprite.taille.x / 2
             obj1.vitesse.x = 0
         case "haut":
+            if obj2.property.get("amortissante", False):
+                obj1.vitesse
             obj1.position.y = obj2_hg.y - obj1.sprite.taille.y / 2
             obj1.vitesse.y = 0
             obj1.direction.y = 0

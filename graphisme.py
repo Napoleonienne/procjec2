@@ -16,7 +16,7 @@ import place_holder
 
 
 
-def chemin_absolue(relative_path: str) -> str:
+def chemin_absolue(relative_path: str,replansan: str="") -> str:
     """
     Obtient le chemin absolu vers une ressource pour la compilation avec PyInstaller. 
     ARGs:
@@ -41,11 +41,13 @@ def chemin_absolue(relative_path: str) -> str:
 
 
 Vec2 = vect.Vec2
+# Valeurs par défaut pour la taille de la fenêtre
+HAUTEUR =600
+LARGEUR = round(HAUTEUR*16/9)
 
 
-
-FENETRE_HAUTEUR = 600
-FENETRE_LARGEUR = round(FENETRE_HAUTEUR*16/9)
+FENETRE_HAUTEUR = HAUTEUR
+FENETRE_LARGEUR = LARGEUR
 
 
 
@@ -110,13 +112,17 @@ def valeur_pixels(val: float) -> float:
 
 
 
-def ouvrir_fenetre(repere:bool = False, largeur: int | None = None, hauteur: int | None = None):
+def ouvrir_fenetre(repere:bool = False, largeur: int = FENETRE_LARGEUR, hauteur: int = FENETRE_HAUTEUR):
     """_summary_
 
     Args:
         repere (False): permmet ouvrir une fenetre
     """
     logging.info("ouverture de fenetre")
+    hauteur = hauteur if hauteur else FENETRE_HAUTEUR
+    largeur = largeur if largeur else FENETRE_LARGEUR
+
+
     definir_fenetre(largeur=largeur, hauteur=hauteur)
     fltk.cree_fenetre(FENETRE_LARGEUR,FENETRE_HAUTEUR,affiche_repere=repere)
 
@@ -217,17 +223,30 @@ def palier(vec:Vec2, taille_tuile:int)->Vec2:
 
 
 def creer_texte(pos:Vec2,taile:float,texte:str)->int:
+    """affiche du texte 
+
+    Args:
+        pos (Vec2): position du texte
+        taile (float): taille police
+        texte (str): texte a afficher
+
+    Returns:
+        int: _description_
+    """
     pos_pixels = vers_pixels(pos)
     taille_pixels = max(1, round(valeur_pixels(taile)))
     id = fltk.texte(pos_pixels.x,pos_pixels.y,texte,taille=taille_pixels)
     return id
 
-def afficher_fond(path: str | None, tag):
-    try:
-        chemin = chemin_absolue(path)
-    except Exception as e:
-        logging.error(f"erreur lors du chargement de l'image : {e}")
-        return
+def afficher_fond(path: str, tag):
+    """permet afficher une image de fond
+
+    Args:
+        path (str | None): _description_
+        tag (_type_): _description_
+    """
+    chemin = chemin_absolue(path)
+
     if chemin is None:
         return
     centre = vers_pixels(Vec2(0.5, 0.5))
@@ -370,7 +389,7 @@ def afficher(object: place_holder.Object2d, tag: str = ""):
     logging.info(f"graphisme : Affichage de l'objet à la position {object.pos} avec la texture '{object.texture}' et la taille {object.taille}")
     pos_pixels = vers_pixels(object.pos)
     taille_pixels = vers_pixels(object.taille)
-    texture = _normaliser_chemin(object.texture)
+    texture = chemin_absolue(object.texture)
     if texture is None:
         return
     fltk.image(

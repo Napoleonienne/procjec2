@@ -220,7 +220,6 @@ class app:
 
 
                 case "pause":
-                    menu = self.initialize_menu_pause()
                     menu.afficher() # type: ignore
                     for bouton in menu.bouton: # type: ignore
                         bouton.action(evenement)

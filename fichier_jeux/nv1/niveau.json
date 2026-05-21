@@ -13,24 +13,7 @@
     "taille_tuile": 16,
     "tag": "decor",
     "tuiles": {
-      "(100, 50)": {
-        "pos": {"x": 100, "y": 50},
-        "taille": {"x": 16, "y": 16},
-        "texture": "assets/nuage1.png",
-        "property": {}
-      },
-      "(300, 80)": {
-        "pos": {"x": 300, "y": 80},
-        "taille": {"x": 16, "y": 16},
-        "texture": "assets/nuage2.png",
-        "property": {}
-      },
-      "(600, 60)": {
-        "pos": {"x": 600, "y": 60},
-        "taille": {"x": 16, "y": 16},
-        "texture": "assets/arbre.png",
-        "property": {}
-      }
+   
     }
   },
 
@@ -41,84 +24,84 @@
       "(0, 560)": {
         "pos": {"x": 0, "y": 560},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/sol_herbe.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(16, 560)": {
         "pos": {"x": 16, "y": 560},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/sol_herbe.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(32, 560)": {
         "pos": {"x": 32, "y": 560},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/sol_herbe.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(48, 560)": {
         "pos": {"x": 48, "y": 560},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/sol_herbe.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(64, 560)": {
         "pos": {"x": 64, "y": 560},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/sol_herbe.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(80, 560)": {
         "pos": {"x": 80, "y": 560},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/sol_herbe.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(96, 560)": {
         "pos": {"x": 96, "y": 560},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/sol_herbe.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
@@ -126,84 +109,84 @@
       "(0, 0)": {
         "pos": {"x": 0, "y": 0},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/mur_pierre.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(0, 16)": {
         "pos": {"x": 0, "y": 16},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/mur_pierre.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(0, 32)": {
         "pos": {"x": 0, "y": 32},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/mur_pierre.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(0, 48)": {
         "pos": {"x": 0, "y": 48},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/mur_pierre.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(0, 64)": {
         "pos": {"x": 0, "y": 64},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/mur_pierre.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(0, 80)": {
         "pos": {"x": 0, "y": 80},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/mur_pierre.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(0, 96)": {
         "pos": {"x": 0, "y": 96},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/mur_pierre.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
@@ -211,24 +194,24 @@
       "(784, 0)": {
         "pos": {"x": 784, "y": 0},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/mur_pierre.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
       "(784, 16)": {
         "pos": {"x": 784, "y": 16},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/mur_pierre.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       },
@@ -236,12 +219,12 @@
       "(784, 32)": {
         "pos": {"x": 784, "y": 32},
         "taille": {"x": 16, "y": 16},
-        "texture": "assets/mur_pierre.png",
+        "texture": "fichier_jeux/asset/place_holder/amortissante.png",
         "property": {
           "solide": true,
           "rebondissante": false,
           "glissante": false,
-          "amortissante": false,
+          "amortissante": true,
           "mortelle": false
         }
       }
