@@ -18,10 +18,12 @@ image = Image.open("fichier_jeux/missing.jpg")
 
 
 
-fltk.image(image, 0, 0)
-fltk.mise_a_jour()
-while True:
-    pass
+
+
+
+a = (i for i in range(5))
+for i in range(5):
+    print(next(a))
 
 
 

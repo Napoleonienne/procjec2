@@ -7,6 +7,8 @@ from menus import Menu
 import filesytem
 import monde
 import physique
+import editeur_niveau
+import solveur
 
 
 vec2 = vect.Vec2
@@ -35,29 +37,45 @@ class app:
         self.distance_max = 0
         self.menusaugarde:Menu = Menu("menuspause", "fichier_jeux/menus/image de fond.png") 
 
+   
+
+        self.MenuPause:Menu = Menu("menu pause", "fichier_jeux/menus/image de fond.jpg")
+        self.MenuPause.ajouter_bouton(vec2(0.5, 0.2), vec2(0.2, 0.1), self.ouvrir_sauvegardes_depuis_menu, texte="sauvegardes")
+
+        self.MenuPause.ajouter_bouton(vec2(0.5, 0.2), vec2(0.2, 0.1), self.ouvrir_sauvegardes_depuis_menu, "sauvegardes")
+        self.MenuPause.ajouter_bouton(vec2(0.5, 0.3), vec2(0.2, 0.1), self.retour_menu, "retour au menu")
+        self.MenuPause.ajouter_bouton(vec2(0.5, 0.5), vec2(0.2, 0.1), self.reprendre_jeu, "reprendre")
+
+
+        self.joueur:list[monde.joueur] = []
+
+
+        
+        
+        
+        
         self.MenuPrincipal:Menu =Menu(
             "menu principal",
             "fichier_jeux/menus/image de fond.jpg",
             "fichier_jeux/menus/logo.png",
         )
+        self.MenuPrincipal.dim_logo = vec2(0.3, 0.27)
+        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.43), vec2(0.2, 0.1), self.lancer_jeu, "jouer")
+        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.57), vec2(0.2, 0.1), self.ouvrir_sauvegardes_depuis_menu, "sauvegardes")
+        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.85), vec2(0.2, 0.1), self.ouvrir_editeur_niveau, "editeur de niveau")
+        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.7), vec2(0.2, 0.1), self.fermer_jeu, "quitter")
 
-        self.MenuPause:Menu = Menu("menu pause", "fichier_jeux/menus/image de fond.jpg")
-
-        self.joueur:list[monde.joueur] = []
 
 
-    
 
 
         self.saut_temp = None
     #partie plublic de l'app
-    def run(self):
+    def run(self) -> None:
         options = filesytem.charger_options()
         fenetre = options["fenetre"]
         self.distance_max = options["VMAX"]
         self.pas = options["PAS"]
-        self.initialize_main_menu()
-        self.initialize_menu_pause()
         self.initialiser_menus_sauvegarde()
         graphisme.ouvrir_fenetre(largeur=fenetre["largeur"], hauteur=fenetre["hauteur"])
         filesytem.peupler_sauvegardes()
@@ -65,6 +83,8 @@ class app:
         self.mainloop()
         graphisme.fermer()
         logging.info("Boucle principale terminée.")
+
+        return
 
 
 
@@ -79,16 +99,7 @@ class app:
 
 
     #partie privée de l'app
-    def initialize_main_menu(self):
      
-        self.MenuPrincipal.dim_logo = vec2(0.3, 0.27)
-
-        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.43), vec2(0.2, 0.1), self.lancer_jeu, "jouer")
-        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.57), vec2(0.2, 0.1), self.ouvrir_sauvegardes_depuis_menu, "sauvegardes")
-        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.85), vec2(0.2, 0.1), self.ouvrir_editeur_niveau, "editeur de niveau")
-        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.7), vec2(0.2, 0.1), self.fermer_jeu, "quitter")
-
-
 
 
 
@@ -102,9 +113,8 @@ class app:
 
         logging.info("Ouverture de l'éditeur de niveau")
         
+        
     
-    def initialize_menu_pause(self):
-        self.MenuPause.ajouter_bouton(vec2(0.5, 0.5), vec2(0.2, 0.1), self.reprendre_jeu, "reprendre")
 
     def lancer_jeu(self):
         self.jeu_pre = True
@@ -126,6 +136,7 @@ class app:
     def retour_menu(self):
         logging.info("retour au menu")
         self.etat = "menu"
+        
 
 
     def initialiser_menus_sauvegarde(self):

@@ -69,8 +69,7 @@ def ressoudre_colision(obj1: monde.joueur,obj2:Object2d):
     Returns:
         bool: si sa touche ou pas
     """
-    if not colision(obj1,obj2):
-        return False
+
 
     obj1_hg: vect.Vec2 = obj1.coin_haut_gauche
     obj1_bd: vect.Vec2 = obj1.coin_bas_droit
@@ -104,7 +103,6 @@ def ressoudre_colision(obj1: monde.joueur,obj2:Object2d):
             obj1.vitesse.y = 0
             obj1.direction.y = 0
 
-    return True
         
         
     
@@ -136,6 +134,8 @@ def applique_effet(joueur:monde.joueur,tuile:place_holder.Tuile,nv:monde.niveau)
         joueur.position = nv.debut
         joueur.vitesse = vect.Vec2(0, 0)
         joueur.direction = vect.Vec2(0, 0)
+    if tuile.tag =='air':
+        joueur.vitesse *= 0.8
 
 
    
@@ -156,13 +156,18 @@ def update_physique(monde:monde.niveau,dt:float,joueur:monde.joueur):
 
 
     for  tuile in monde.terrain:
-        if ressoudre_colision(joueur, tuile):
-            applique_effet(joueur, tuile, monde)
+        if colision(joueur, tuile) :
+            if tuile.property.get("solide", False) :
+                ressoudre_colision(joueur, tuile)
+                applique_effet(joueur, tuile, monde)
     for tuile in monde.devant:
         if colision(joueur, tuile):
             if tuile.property.get("solide", False):
                 ressoudre_colision(joueur, tuile)
             applique_effet(joueur, tuile, monde)
+    
+
+    joueur.vitesse -= joueur.vitesse * dt
     
         
 

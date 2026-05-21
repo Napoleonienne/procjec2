@@ -1,7 +1,5 @@
-try:
-    from __future__ import annotations
-except ImportError:
-    pass
+from __future__ import annotations
+
 
 from dataclasses import dataclass
 

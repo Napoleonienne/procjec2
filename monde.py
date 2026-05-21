@@ -6,7 +6,7 @@ import vect
 from place_holder import Sprite, Tuile,Object2d
 vec2 = vect.Vec2
 import fltk
-
+from graphisme import chemin_absolue
 
 
 
@@ -15,10 +15,10 @@ class joueur(Object2d):
     
     """
     def __init__(self,pos:vec2):
-        texture = graphisme.resource_path("fichier_jeux/joueur/mouton.png")
+        texture = chemin_absolue("fichier_jeux/joueur/mouton.png")
         taille = vec2(0.06, 0.1)
         super().__init__(pos, texture, taille)
-        self.sprite: Sprite = Sprite(pos, graphisme.chemin_absolue("fichier_jeux/joueur/mouton.png"))
+        self.sprite: Sprite = Sprite(pos, graphisme.chemin_absolue("fichier_jeux/joueur/mouton.png"),taille)
         self.vitesse:vec2 =vec2()
         self.poids:float=12
 
@@ -45,10 +45,10 @@ class joueur(Object2d):
 
     @property
     def coin_haut_gauche(self) -> vec2:
-        return self.position - self.taille/2
+        return self.sprite.coin_haut_gauche
     @property
     def coin_bas_droit(self) -> vec2:
-        return self.position + self.taille/2
+        return self.sprite.coin_bas_droit
     
 
     
