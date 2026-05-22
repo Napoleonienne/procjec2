@@ -120,6 +120,8 @@ def charger_niveau(nom: str)-> niveau:
     niveau_charger.decor = Grille(16,tag='decor')
     niveau_charger.terrain = Grille(16,tag='terrain')
     niveau_charger.devant = Grille(8,tag='devant')
+    niveau_charger.name = donne_niveau["nom"]
+
 
     peupler_niveau(donne_niveau, niveau_charger, "avant")
     peupler_niveau(donne_niveau, niveau_charger, "decor")

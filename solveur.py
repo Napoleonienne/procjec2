@@ -89,7 +89,10 @@ def simuler_saut(joueur:monde.joueur,direction,nv:monde.niveau,pas =0.69,max_sau
         physique.update_physique(nv, pas, joueur)
 
 
-def get_valide_neigbooor(nv:monde.niveau,n:noeud,pas:float,max_saut:float = 15.0) -> Generator[noeud, Any, None]:
+def get_valide_neigbooor(nv:monde.niveau,
+                         n:noeud,
+                         pas:float,
+                         max_saut:float = 15.0) -> Generator[noeud, Any, None]:
     """
     comme c'est lourd on va fair que ce soit un lazy generator
     creer tout les voisin de la position actuel
@@ -117,7 +120,7 @@ def get_valide_neigbooor(nv:monde.niveau,n:noeud,pas:float,max_saut:float = 15.0
                 estimation = n.coord+direction
                 if estimation.x > 1 or estimation.x < 0 or estimation.y > 1 or estimation.y < 0:
                     continue
-                simuler_saut(joueur,direction*pas,nv,pas,max_saut)
+                simuler_saut(joueur,direction,nv,pas,max_saut)
                 if not (0 <= joueur.position.x <= 1 and 0 <= joueur.position.y <= 1):#on sait jamais si y a un bug dans la physique et que l'ia est la seule a pour voir acceder
                     continue
                 h = vect.norme(nv.point_fin - joueur.position)
@@ -130,7 +133,7 @@ def get_valide_neigbooor(nv:monde.niveau,n:noeud,pas:float,max_saut:float = 15.0
 
 
 
-def reconstruire_chemin(noeud_final:noeud)->list:
+def reconstruire_chemin(noeud_final:noeud) -> list[vect.Vec2]:
     """reconstruit le chemin a partir du noeud final
 
     Args:
@@ -150,7 +153,7 @@ def reconstruire_chemin(noeud_final:noeud)->list:
 
 
 
-def  algoA(nv:monde.niveau,obj)->Optional[list]:
+def  algoA(nv:monde.niveau)->Optional[list[vect.Vec2]]:
 
     """
     implementation de algo Recherche A 

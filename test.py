@@ -3,7 +3,7 @@ from email.mime import image
 import fltk
 from PIL import Image
 
-
+import code
 
 
 from itertools import cycle
@@ -20,10 +20,5 @@ image = Image.open("fichier_jeux/missing.jpg")
 
 
 
-
-a = (i for i in range(5))
-for i in range(5):
-    print(next(a))
-
-
+code.interact()
 

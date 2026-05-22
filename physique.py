@@ -1,5 +1,6 @@
 from doctest import debug_script
 import logging
+import re
 from turtle import pos
 import graphisme
 from place_holder import Sprite, Tuile,Object2d
@@ -77,6 +78,7 @@ def ressoudre_colision(obj1: monde.joueur,obj2:Object2d):
     obj2_hg: vect.Vec2 = obj2.coin_haut_gauche
     obj2_bd: vect.Vec2 = obj2.coin_bas_droit
 
+
     penetration:dict[str, float] = {
         "gauche": obj1_bd.x - obj2_hg.x,
         "droite": obj2_bd.x - obj1_hg.x,
@@ -96,7 +98,7 @@ def ressoudre_colision(obj1: monde.joueur,obj2:Object2d):
             obj1.vitesse.x = 0
         case "haut":
             if obj2.property.get("amortissante", False):
-                obj1.vitesse
+                obj1.vitesse.x =0    
             obj1.position.y = obj2_hg.y - obj1.sprite.taille.y / 2
             obj1.vitesse.y = 0
             obj1.direction.y = 0
@@ -114,7 +116,7 @@ def ressoudre_colision(obj1: monde.joueur,obj2:Object2d):
 
 
 
-def applique_effet(joueur:monde.joueur,tuile:place_holder.Tuile,nv:monde.niveau):
+def applique_effet(joueur:monde.joueur,tuile:place_holder.Tuile,nv:monde.niveau,pas:float):
     """
     applique les effets au joueur
 
@@ -123,21 +125,19 @@ def applique_effet(joueur:monde.joueur,tuile:place_holder.Tuile,nv:monde.niveau)
         dt (float): le temps écoulé depuis le dernier update
     """
 
-    
 
+    
 
     if tuile.property.get("rebondissante", False):
         joueur.vitesse.y = -abs(joueur.vitesse.y) * 0.8
     if tuile.property.get("glissante", False):
         joueur.vitesse.x *= 0.95
-    if tuile.property.get("amortissante", False):
-        joueur.vitesse *= 0.9
     if tuile.property.get("mortelle", False):
         joueur.position = nv.debut
         joueur.vitesse = vect.Vec2(0, 0)
         joueur.direction = vect.Vec2(0, 0)
-    if tuile.tag =='air':
-        joueur.vitesse *= 0.8
+  
+
 
 
    
@@ -161,12 +161,12 @@ def update_physique(monde:monde.niveau,dt:float,joueur:monde.joueur):
         if colision(joueur, tuile) :
             if tuile.property.get("solide", False) :
                 ressoudre_colision(joueur, tuile)
-                applique_effet(joueur, tuile, monde)
+            applique_effet(joueur, tuile, monde,dt)
     for tuile in monde.devant:
         if colision(joueur, tuile):
             if tuile.property.get("solide", False):
                 ressoudre_colision(joueur, tuile)
-            applique_effet(joueur, tuile, monde)
+            applique_effet(joueur, tuile, monde,dt)
     
 
     joueur.vitesse -= joueur.vitesse * dt

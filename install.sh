@@ -42,9 +42,10 @@ pip install -r "$SCRIPT_DIR/requirement.txt"
 
 
 pyinstaller --onefile --noconsole \
-  --name saute mouton \
+  --name saute_mouton \
     main.py \
   --add-data "fichier_jeux:fichier_jeux" \
+    --console \
   --hidden-import nava \
   --hidden-import tkinter \
   --hidden-import PIL.ImageTk \

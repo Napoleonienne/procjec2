@@ -1,3 +1,5 @@
+import code
+from email import generator
 import logging
 import time
 from typing import Optional
@@ -32,7 +34,7 @@ class app:
         self.etat = "menu" # etat possible : menu, jeu, pause, menus_sauvegarde, editeur_niveau
         self.dt = 0
         self.lastframe: int | None = None
-        self.level_actuel = monde.niveau()
+        self.level_actuel = monde.niveau("ph")
         self.joueur_actuel: monde.joueur | None = None  
         self.distance_max = 0
         self.menusaugarde:Menu = Menu("menuspause", "fichier_jeux/menus/image de fond.png") 
@@ -48,6 +50,7 @@ class app:
 
 
         self.joueur:list[monde.joueur] = []
+        self.editeur = None
 
 
         
@@ -104,13 +107,15 @@ class app:
 
 
 
-    def changer_etat(self, nouvel_etat: str):
-        logging.info(f"Changement d'état : {self.etat} -> {nouvel_etat}")
-        
-        self.etat = nouvel_etat
+    def ouvrir_editeur_niveau(self,nom,nouveau_niveau:bool = False):
+        """permetera ouvri l'editeur
 
-    def ouvrir_editeur_niveau(self):
-
+        Args:
+            nouveau_niveau (bool, optional): _description_. Defaults to True.
+            
+        """
+        nv = monde.niveau(nom) if nouveau_niveau else self.level_actuel 
+        self.editeur= editeur_niveau.EditeurNiveau(nom,nv)
         logging.info("Ouverture de l'éditeur de niveau")
         
         
@@ -178,6 +183,14 @@ class app:
         logging.info("Démarrage de la boucle principale.")
         evenement:graphisme.evenement | None = None
 
+        solution_nv ={
+            self.level_actuel.name: {
+                "stupide":None,
+                "algoA*": None
+            }
+        }
+        choix_algo= ["algoA","stupe"]
+
         
        
         while self.en_cours and not graphisme.shouldclose(evenement):
@@ -208,28 +221,45 @@ class app:
 
                     physique.update_physique(self.level_actuel, self.pas, self.joueur_actuel)  # type: ignore
 
-
-                        
-
-
-                    
-
-
-
-
-
-
                 case "pause":
                     menu.afficher() # type: ignore
                     for bouton in menu.bouton: # type: ignore
                         bouton.action(evenement)
+                case "solveur":
+                    cin = int(input('choisir algo: 1 algo a 2 stupide'))
+                    
+                    
+
+                    if solution_nv[self.level_actuel.name].get(choix_algo[cin]) is None:
+                        c = solveur.algoA(self.level_actuel)
+                        solution_nv[self.level_actuel.name][choix_algo[cin]] = c if c is not None else False #type ignore
+                    elif not  solution_nv[self.level_actuel.name][choix_algo[cin]]: 
+                        a=graphisme.creer_texte(vec2(0.5,0.5),26,"pas de solution")
+                        time.sleep(0.5)
+                        graphisme.supprimer_el(a)
+                    else:
+                        solution_nv[self.level_actuel.name].get(choix_algo[cin])
+                        self.joueur
+                        
+
+
+
+                    
+                        
+                    
+
+
+                    pass
                 case "menus_sauvegarde":
                     menu = self.initialiser_menus_sauvegarde()
                     menu.afficher()
                     for bouton in menu.bouton:
                         bouton.action(evenement)
                 case "editeur_niveau":
-                    self.ouvrir_editeur_niveau()
+                    def bj():
+                        nom = str(input("nom du niveau"))
+                        creer_niveau = bool(input("voulez vous creer un nouveau niveau"))
+                        self.ouvrir_editeur_niveau(nom,creer_niveau)
 
                     pass
                 case _:

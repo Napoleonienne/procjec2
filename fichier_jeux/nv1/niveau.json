@@ -1,4 +1,5 @@
 {
+  "nom":"bile malekite",
   "debut": {"x": 100, "y": 550},          
   "point_fin": {"x": 750, "y": 100},      
   "fond": "assets/fond_ciel.jpg",         

@@ -5,7 +5,6 @@ import graphisme
 import vect
 from place_holder import Sprite, Tuile,Object2d
 vec2 = vect.Vec2
-import fltk
 from graphisme import chemin_absolue
 
 
@@ -41,7 +40,9 @@ class joueur(Object2d):
 
     
     def afficher(self) -> None:
-        graphisme.afficher(self.sprite)
+        self.id = graphisme.afficher(self.sprite,"joueur")
+    def desaficher(self):
+        graphisme.supprimer_el(self.id)
 
     @property
     def coin_haut_gauche(self) -> vec2:
@@ -65,7 +66,7 @@ class niveau:
 
     
     """
-    def __init__(self,debut:vec2 | None = None,fin:vec2 | None = None):
+    def __init__(self,name,debut:vec2 | None = None,fin:vec2 | None = None):
         """_summary_
 
         Args:
@@ -73,6 +74,7 @@ class niveau:
             fin (vec2): fin du niveau
         """
         logging.debug(f"creation du niveau")
+        self.name =name
         self.debut:vec2 = debut or vec2(0.06, 0.9)
         self.fond:str = ""      # Image de fond
         self.avant = graphisme.Grille(32,"avant")    #aux cas ou
@@ -121,6 +123,7 @@ class niveau:
         """
         logging.debug("niveau : Sérialisation du niveau pour le JSON")
         return {
+            'nom':self.name,
             "debut": {"x": self.debut.x, "y": self.debut.y},
             "point_fin": {"x": self.point_fin.x, "y": self.point_fin.y},
             "fond": self.fond,
@@ -130,6 +133,8 @@ class niveau:
             "objet": self.devant.serialisation(),
             "devant": [sprite.serialisation() for sprite in self.plan_object],
         }
+    def __hash__(self) -> int:
+        pass
 
 
 
