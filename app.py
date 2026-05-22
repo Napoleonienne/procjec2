@@ -34,7 +34,7 @@ class app:
         self.etat = "menu" # etat possible : menu, jeu, pause, menus_sauvegarde, editeur_niveau
         self.dt = 0
         self.lastframe: int | None = None
-        self.level_actuel = monde.niveau("ph")
+        self.level_actuel = filesytem.charger_niveau("base")
         self.joueur_actuel: monde.joueur | None = None  
         self.distance_max = 0
         self.menusaugarde:Menu = Menu("menuspause", "fichier_jeux/menus/image de fond.png") 
@@ -42,9 +42,7 @@ class app:
    
 
         self.MenuPause:Menu = Menu("menu pause", "fichier_jeux/menus/image de fond.jpg")
-        self.MenuPause.ajouter_bouton(vec2(0.5, 0.2), vec2(0.2, 0.1), self.ouvrir_sauvegardes_depuis_menu, texte="sauvegardes")
-
-        self.MenuPause.ajouter_bouton(vec2(0.5, 0.2), vec2(0.2, 0.1), self.ouvrir_sauvegardes_depuis_menu, "sauvegardes")
+        self.MenuPause.ajouter_bouton(vec2(0.5, 0.2), vec2(0.2, 0.1), self.menu_niveau, texte="sauvegardes")
         self.MenuPause.ajouter_bouton(vec2(0.5, 0.3), vec2(0.2, 0.1), self.retour_menu, "retour au menu")
         self.MenuPause.ajouter_bouton(vec2(0.5, 0.5), vec2(0.2, 0.1), self.reprendre_jeu, "reprendre")
 
@@ -64,7 +62,7 @@ class app:
         )
         self.MenuPrincipal.dim_logo = vec2(0.3, 0.27)
         self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.43), vec2(0.2, 0.1), self.lancer_jeu, "jouer")
-        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.57), vec2(0.2, 0.1), self.ouvrir_sauvegardes_depuis_menu, "sauvegardes")
+        self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.57), vec2(0.2, 0.1), self.menu_niveau, "menu niveau")
         self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.85), vec2(0.2, 0.1), self.ouvrir_editeur_niveau, "editeur de niveau")
         self.MenuPrincipal.ajouter_bouton(vec2(0.5, 0.7), vec2(0.2, 0.1), self.fermer_jeu, "quitter")
 
@@ -79,7 +77,6 @@ class app:
         fenetre = options["fenetre"]
         self.distance_max = options["VMAX"]
         self.pas = options["PAS"]
-        self.initialiser_menus_sauvegarde()
         graphisme.ouvrir_fenetre(largeur=fenetre["largeur"], hauteur=fenetre["hauteur"])
         filesytem.peupler_sauvegardes()
         
@@ -127,7 +124,7 @@ class app:
         if self.joueur_actuel is None:
             self.joueur_actuel = monde.joueur(self.level_actuel.debut)
 
-    def ouvrir_sauvegardes_depuis_menu(self):
+    def menu_niveau(self):
         self.jeu_pre = False
         self.etat = "menus_sauvegarde"
 
@@ -144,7 +141,7 @@ class app:
         
 
 
-    def initialiser_menus_sauvegarde(self):
+    def peupler_selection_niveau(self):
         self.menusaugarde: Menu = Menu("menuspause", "fichier_jeux/menus/image de fond.png")
         index = 0
 
@@ -238,8 +235,8 @@ class app:
                         time.sleep(0.5)
                         graphisme.supprimer_el(a)
                     else:
-                        solution_nv[self.level_actuel.name].get(choix_algo[cin])
-                        self.joueur
+                        bt = solution_nv[self.level_actuel.name].get(choix_algo[cin])
+                        self.joueur_actuel.vitesse = next(bt)
                         
 
 

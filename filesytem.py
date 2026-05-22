@@ -2,31 +2,43 @@ import logging
 from pathlib import Path
 import json
 
-from numpy import isin
 from vect import Vec2
 from monde import niveau
 from place_holder import Tuile, Sprite
 import graphisme
 from graphisme import Grille
+import sys
 
+sauvegardes_dispo: dict[str, Path] = {"base":Path("/home/guy/Bureau/procjec2/fichier_jeux/level/base.json")}
 
-sauvegardes_dispo: dict[str, Path] = {}
+def chemin_absolue(relative_path: str,replansan: str="fichier_jeux/level/") -> str:
+    """
+    Obtient le chemin absolu vers une ressource pour la compilation avec PyInstaller. 
+    ARGs:
+        relative_path:le chemin relative du fichier
+        
+    """
+    logging.debug(f"graphisme : Obtention du chemin absolu pour la ressource '{relative_path}'")
+    try:
+        base_path = Path(sys._MEIPASS)  # type: ignore[attr-defined]
+    except AttributeError:
+        base_path = Path(__file__).resolve().parent
 
+    res = base_path / relative_path
 
-def dossier_sauvegarde() -> Path:
-    base_path = Path.home() / ".saute_mouton"
-    chemin = base_path / "save"
-    chemin.mkdir(parents=True, exist_ok=True)
-    return chemin
+    if not res.exists():
+        logging.error(f"Le fichier suivant n'existe pas : {res}")
 
+    return str(res)
 
+DOSSIER_SAUVEGARDE = Path(chemin_absolue("fichier_jeux/level"))
 def peupler_sauvegardes():
     """
     a lancer aux lancement de l'aplication
     Peuple le dictionnaire des sauvegardes disponibles en scannant le dossier de sauvegarde.
     """
     global sauvegardes_dispo
-    ch_sauvegarde = dossier_sauvegarde()
+    ch_sauvegarde = DOSSIER_SAUVEGARDE
     for file in ch_sauvegarde.glob("*.json"):
         nom = file.stem
         sauvegardes_dispo[nom] = file
@@ -86,7 +98,7 @@ def sauvegarder_niveau(level: niveau, name: str):
     """Sauvegarde le niveau dans un fichier JSON."""
     logging.info(f"Sauvegarde du niveau '{name}'")
     global sauvegardes_dispo
-    ch_sauvegarde = dossier_sauvegarde() / f"{name}.json"
+    ch_sauvegarde = DOSSIER_SAUVEGARDE / f"{name}.json"
     sauvegardes_dispo[name] = ch_sauvegarde
 
 
@@ -107,6 +119,7 @@ def charger_niveau(nom: str)-> niveau:
     Args:
         nom (str): nom du niveau a charger
     """
+    
     ch_savegarde = sauvegardes_dispo[nom]
     logging.info(f"Chargement du niveau '{nom}'")
     with open(ch_savegarde, 'r') as f:
@@ -152,7 +165,7 @@ def peupler_niveau(donne_niveau: dict, niveau_charger: niveau, tranche: str):
 
 
     grille = getattr(niveau_charger, tranche)
-    for tuile_data in donne_niveau[tranche].values():
+    for tuile_data in donne_niveau[tranche].items():
 
         pos = Vec2(tuile_data["pos"]["x"], tuile_data["pos"]["y"])
         taille = tuile_data["taille"]
